@@ -75,7 +75,7 @@ module.exports = {
         //在所有页面中启用自动生成子侧边栏，原 sidebar 仍然兼容
         subSidebar: 'auto',
         // 侧边栏
-        "sidebar": {
+        sidebar: {
             "/docs/theme-reco/": [
                 "",
                 "theme",
@@ -114,14 +114,24 @@ module.exports = {
             //     "link": "https://vuepress-theme-reco.recoluan.com"
             // }
         ],
+        // valine评论配置
+        valineConfig: {
+            appId: 'yqgiGcAriEWDtWkmELUbIiPB-gzGzoHsz',
+            appKey: 'CL0o5NJnuVckUK0sTMmSzmsb',
+        },
+        // 导航栏logo
         "logo": "/logo.png",
         "search": true,
         "searchMaxSuggestions": 10,
+        // 最后一次更新时间提示文字
         "lastUpdated": "Last Updated",
+        // 全局作者名称
         "author": "高压锅里的小白",
+        // 图像图片
         "authorAvatar": "/avatar.jpeg",
         "record": "xxxx",
-        "startYear": "2017"
+        // 开始年份
+        "startYear": "2020"
     },
     "markdown": {
         "lineNumbers": true
