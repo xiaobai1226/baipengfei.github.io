@@ -129,7 +129,7 @@ module.exports = {
         // 图像图片
         "authorAvatar": "/img/avatar.jpeg",
         // 备案号
-        "record": "xxxx",
+        // "record": "xxxx",
         // 开始年份
         "startYear": "2020"
     },
