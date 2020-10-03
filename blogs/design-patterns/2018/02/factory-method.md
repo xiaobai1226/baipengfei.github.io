@@ -1,6 +1,6 @@
 ---
 title: Java设计模式-----2、工厂方法模式
-date: 2018-02-28
+date: 2018-02-27
 tags:
  - 设计模式
 categories:

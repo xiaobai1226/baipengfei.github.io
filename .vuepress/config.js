@@ -73,16 +73,7 @@ module.exports = {
             }
         ],
         //在所有页面中启用自动生成子侧边栏，原 sidebar 仍然兼容
-        sidebar: 'auto',
-        // 侧边栏
-        // sidebar: {
-        //     "/docs/theme-reco/": [
-        //         "",
-        //         "theme",
-        //         "plugin",
-        //         "api"
-        //     ]
-        // },
+        subSidebar: 'auto',
         "type": "blog",
         // 博客配置
         "blogConfig": {
