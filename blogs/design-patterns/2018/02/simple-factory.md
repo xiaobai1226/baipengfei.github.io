@@ -1,12 +1,12 @@
 ---
 title: Java设计模式-----1、简单工厂模式
-date: 2018-08-27
+date: 2018-02-27
 tags:
  - 设计模式
 categories:
  - 设计模式
 prev: false
-next: ./022801
+next: ./factory-method
 ---
 
 &emsp;&emsp;简单工厂模式是属于创建型模式，又叫做静态工厂方法（Static Factory Method）模式，但不属于23种GOF设计模式之一。简单工厂模式是由一个工厂对象决定创建出哪一种产品类的实例，简单来说就是，
