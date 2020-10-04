@@ -1,8 +1,8 @@
 module.exports = {
     // 博客title
-    "title": "高压锅里的小白のBlog",
+    "title": "小白の生活馆",
     // 博客介绍
-    "description": "Blog",
+    "description": "小白の生活馆",
     // vuepress 打包后的位置
     "dest": "dist",
     "head": [
@@ -119,7 +119,7 @@ module.exports = {
             clientSecret: '680fdfe880cbc7ab25524290f530e79fecafa885',
         },
         // 导航栏logo
-        "logo": "/logo.png",
+        "logo": "/img/avatar.jpeg",
         "search": true,
         "searchMaxSuggestions": 10,
         // 最后一次更新时间提示文字
