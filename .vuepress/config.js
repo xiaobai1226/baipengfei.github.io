@@ -106,18 +106,18 @@ module.exports = {
             // }
         ],
         // valine评论配置
-        // valineConfig: {
-            // appId: 'yqgiGcAriEWDtWkmELUbIiPB-gzGzoHsz',
-            // appKey: 'CL0o5NJnuVckUK0sTMmSzmsb',
-        // },
-        // vssue评论配置
-        vssueConfig: {
-            platform: 'github',
-            owner: 'xiaobai1226',
-            repo: 'Blog',
-            clientId: '86e3d6a6ce9c09f700d6',
-            clientSecret: '680fdfe880cbc7ab25524290f530e79fecafa885',
+        valineConfig: {
+            appId: 'yqgiGcAriEWDtWkmELUbIiPB-gzGzoHsz',
+            appKey: 'CL0o5NJnuVckUK0sTMmSzmsb',
         },
+        // vssue评论配置
+        // vssueConfig: {
+        //     platform: 'github',
+        //     owner: 'xiaobai1226',
+        //     repo: 'Blog',
+        //     clientId: '86e3d6a6ce9c09f700d6',
+        //     clientSecret: '680fdfe880cbc7ab25524290f530e79fecafa885',
+        // },
         // 导航栏logo
         "logo": "/img/avatar.jpeg",
         "search": true,
