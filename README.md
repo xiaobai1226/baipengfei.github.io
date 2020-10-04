@@ -1,7 +1,7 @@
 ---
 home: true
-heroText: 高压锅里的小白のBlog
-tagline: A simple and beautiful vuepress blog theme.
+heroText: 小白の生活馆
+tagline: The wealth of the mind is the only wealth.
 # heroImage: /hero.png
 # heroImageStyle: {
 #   maxWidth: '600px',
@@ -11,9 +11,9 @@ tagline: A simple and beautiful vuepress blog theme.
 #   background: '#fff',
 #   borderRadius: '1rem',
 # }
-bgImageStyle: {
-  height: '450px'
-}
+# bgImageStyle: {
+#   height: '450px'
+# }
 isShowTitleInHome: false
 actionText: Guide
 actionLink: /views/other/guide

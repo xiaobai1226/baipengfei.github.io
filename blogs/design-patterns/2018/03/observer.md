@@ -1,6 +1,6 @@
 ---
 title: Java设计模式-----9、观察者模式
-date: 2018-03-09
+date: 2018-03-09 09:56:00
 tags:
  - 设计模式
 categories:

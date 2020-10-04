@@ -1,6 +1,6 @@
 ---
 title: Java设计模式-----5、原型模式
-date: 2018-03-02
+date: 2018-03-02 09:32:00
 tags:
  - 设计模式
 categories:

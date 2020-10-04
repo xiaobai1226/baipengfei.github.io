@@ -1,6 +1,6 @@
 ---
 title: Java设计模式-----4、单例模式
-date: 2018-03-01
+date: 2018-03-01 14:29:00
 tags:
  - 设计模式
 categories:

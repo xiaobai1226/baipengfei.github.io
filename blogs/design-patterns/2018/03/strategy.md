@@ -1,6 +1,6 @@
 ---
 title: Java设计模式-----8、策略模式
-date: 2018-03-08
+date: 2018-03-08 14:05:00
 tags:
  - 设计模式
 categories:
