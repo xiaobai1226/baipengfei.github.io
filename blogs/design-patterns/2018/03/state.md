@@ -6,7 +6,7 @@ tags:
 categories:
  - 设计模式
 prev: ./memento
-next: 
+next: ./command
 ---
 
 **概念：**  
