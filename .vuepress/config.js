@@ -63,12 +63,12 @@ module.exports = {
                         "text": "码云",
                         "link": "https://gitee.com/xiaobai1226",
                         "icon": "reco-mayun"
-                    },
-                    {
-                        "text": "WeChat",
-                        "link": "https://github.com/xiaobai1226",
-                        "icon": "reco-wechat"
                     }
+                    // {
+                    //     "text": "WeChat",
+                    //     "link": "https://github.com/xiaobai1226",
+                    //     "icon": "reco-wechat"
+                    // }
                 ]
             }
         ],
