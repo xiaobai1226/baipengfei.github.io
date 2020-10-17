@@ -59,7 +59,7 @@ fdisk 要分区的磁盘路径
 ```
 ![fdisk /dev/sdb](/img/blogs/2020/10/linux-mount10.png)  
 
-2. 输入m查看帮助
+2. 输入m查看帮助  
 ![m](/img/blogs/2020/10/linux-mount11.png)  
 
 3. 输入n增加一块新分区  
