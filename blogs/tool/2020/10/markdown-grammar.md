@@ -245,7 +245,7 @@ ___粗斜体___
 <center>  <!--开始居中对齐-->
 
 ![GitHub set up](http://zh.mweb.im/asset/img/set-up-git.gif "图片Title")
-格式: ![图片Alt](图片地址 "图片Title")
+格式：![图片Alt](图片地址 "图片Title")
 </center> <!--结束居中对齐-->
 ```
 
