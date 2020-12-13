@@ -169,3 +169,6 @@ public class SnowFlakeUtils {
     }
 }
 ```
+
+## 参考
+<https://juejin.cn/post/6844903783437172743>
