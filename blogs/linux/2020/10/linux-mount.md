@@ -1,5 +1,5 @@
 ---
-title: Linux磁盘分区挂载方法
+title: Linux磁盘分区挂载方法(已废弃)
 date: 2020-10-10 12:00:00
 sidebar: 'auto'
 tags:
@@ -7,6 +7,9 @@ tags:
 categories:
  - Linux
 ---
+
+> 此方法挂载硬盘，无法后期动态扩容，建议使用新方法进行硬盘挂载。  
+[新方法地址](/blogs/linux/2021/08/linux-mount-new.md)
 
 最近工作碰到一个需求，需要在Linux系统挂载另外的硬盘，实际操作后，整理出这篇教程。  
 本次实验在VM上新增硬盘，并将分区进行挂载  
