@@ -3,9 +3,9 @@ title: Docker安装教程
 date: 2021-08-18 18:27:00
 sidebar: 'auto'
 tags:
- - Linux
+ - docker
 categories:
- - Linux
+ - Docker
 ---
 
 ## 在线安装
