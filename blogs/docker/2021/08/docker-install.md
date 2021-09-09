@@ -92,10 +92,26 @@ usermod -aG docker $USER
 ![下载截图](/img/blogs/2021/08/docker-user.png)
 
 ## 设置国内镜像源
-。。。 待补充
+使用 Docker 需要经常从官方获取镜像，国内拉取镜像的过程非常耗时，所以要更换到国内镜像源
+``` shell
+# 创建或修改 /etc/docker/daemon.json
+# 设置网易镜像源，也可选择其它
+{
+    "registry-mirrors": ["http://hub-mirror.c.163.com"]
+}
 
+# 重启Docker服务
+systemctl restart docker
+```
 
-至此，docker就安装完成了
+若不想设置全局的镜像源，也可在拉取镜像时指定镜像源。
+``` shell
+#临时指定镜像源
+$docker pull registry.docker-cn.com/library/ubuntu:16.04
+```
+
+## docker-compose安装及说明
+详情见： [docker-compose安装及说明](../../../docker/2021/08/docker-compose-install.md)
 
 ## 参考
 <https://segmentfault.com/a/1190000018157675>
