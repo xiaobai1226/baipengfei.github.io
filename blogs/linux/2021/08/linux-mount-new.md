@@ -3,7 +3,7 @@ title: Linux磁盘分区挂载方法(可后期动态扩容)
 date: 2021-08-12 10:13:00
 sidebar: 'auto'
 tags:
- - Linux
+ - linux
 categories:
  - Linux
 ---

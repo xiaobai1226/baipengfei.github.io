@@ -3,7 +3,8 @@ title: Linux配置本地yum源
 date: 2021-08-17 14:30:00
 sidebar: 'auto'
 tags:
- - Linux
+ - linux
+ - yum
 categories:
  - Linux
 ---

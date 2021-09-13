@@ -3,7 +3,7 @@ title: Linux磁盘分区挂载方法(已废弃)
 date: 2020-10-10 12:00:00
 sidebar: 'auto'
 tags:
- - Linux
+ - linux
 categories:
  - Linux
 ---
