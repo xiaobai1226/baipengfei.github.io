@@ -61,7 +61,7 @@ exportfs
 yum install -y rpcbind nfs-utils
 ```
 
-3. **执行以下命令，启动 nfs 服务**  
+2. **执行以下命令，启动 nfs 服务**  
 ``` shell
 systemctl enable rpcbind
 
@@ -73,7 +73,7 @@ systemctl start rpcbind
 客户端不需要启动nfs服务
 :::
 
-2. **执行以下命令检查 nfs 服务器端是否有设置共享目录**  
+3. **执行以下命令检查 nfs 服务器端是否有设置共享目录**  
 ``` shell
 # showmount -e $(nfs服务器的IP)
 showmount -e 10.169.136.38
@@ -83,9 +83,10 @@ Export list for 10.169.136.38:
 /app/nfs/nfs_server *
 ```
 
-3. **执行以下命令挂载 nfs 服务器上的共享目录到本机路径`/app/nfs/nfs_server`**  
+4. **执行以下命令挂载 nfs 服务器上的共享目录到本机路径`/app/nfs/nfs_server`**  
 ``` shell
 mkdir /app/nfs/nfs_client
+
 # mount -t nfs $(nfs服务器的IP):/app/nfs/nfs_server /app/nfs/nfs_client
 mount -t nfs 10.169.136.38:/app/nfs/nfs_server /app/nfs/nfs_client
 
@@ -93,7 +94,13 @@ mount -t nfs 10.169.136.38:/app/nfs/nfs_server /app/nfs/nfs_client
 echo "hello nfs server" > /app/nfs/nfs_client/test.txt
 ```
 
-4. **在 nfs 服务器上执行以下命令，验证文件写入成功**  
+5. **将此挂载加入开机自启**
+``` shell
+# 在/etc/fstab中增加如下内容：
+10.169.136.38:/app/nfs/nfs_server  /app/nfs/nfs_client      nfs    defaults 0 0
+```
+
+6. **在 nfs 服务器上执行以下命令，验证文件写入成功**  
 ``` shell
 cat /app/nfs/nfs_server/test.txt
 ```

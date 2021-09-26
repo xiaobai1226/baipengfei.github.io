@@ -3,6 +3,7 @@ module.exports = {
     "title": "小白の生活馆",
     // 博客介绍
     "description": "小白の生活馆",
+    plugins: ['vuepress-plugin-code-copy'],
     // vuepress 打包后的位置
     "dest": "dist",
     "head": [
