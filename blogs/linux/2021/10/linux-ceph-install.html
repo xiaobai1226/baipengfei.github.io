@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Docker安装Ceph集群 | 小白の生活馆</title>
+    <meta name="generator" content="VuePress 1.7.1">
+    <link rel="icon" href="/img/avatar.jpeg">
+    <meta name="description" content="小白の生活馆">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+    
+    <link rel="preload" href="/assets/css/0.styles.d6cb0b22.css" as="style"><link rel="preload" href="/assets/js/app.e8d8c089.js" as="script"><link rel="preload" href="/assets/js/3.4aa6dc7c.js" as="script"><link rel="preload" href="/assets/js/1.1aa8545e.js" as="script"><link rel="preload" href="/assets/js/53.0668ba79.js" as="script"><link rel="prefetch" href="/assets/js/10.50486e46.js"><link rel="prefetch" href="/assets/js/11.72302ee3.js"><link rel="prefetch" href="/assets/js/12.43ca0b51.js"><link rel="prefetch" href="/assets/js/13.e0078e3c.js"><link rel="prefetch" href="/assets/js/14.759fade3.js"><link rel="prefetch" href="/assets/js/15.a2b3ddd5.js"><link rel="prefetch" href="/assets/js/16.5a98fbe9.js"><link rel="prefetch" href="/assets/js/17.98f52673.js"><link rel="prefetch" href="/assets/js/18.79da9cd3.js"><link rel="prefetch" href="/assets/js/19.94ed3b53.js"><link rel="prefetch" href="/assets/js/20.1fd41350.js"><link rel="prefetch" href="/assets/js/21.7023fcc4.js"><link rel="prefetch" href="/assets/js/22.2aa35c03.js"><link rel="prefetch" href="/assets/js/23.93a3ee4f.js"><link rel="prefetch" href="/assets/js/24.d72ccd0c.js"><link rel="prefetch" href="/assets/js/25.4d39cbb2.js"><link rel="prefetch" href="/assets/js/26.ca335203.js"><link rel="prefetch" href="/assets/js/27.098a5627.js"><link rel="prefetch" href="/assets/js/28.2f92425b.js"><link rel="prefetch" href="/assets/js/29.da21af08.js"><link rel="prefetch" href="/assets/js/30.8b58f18d.js"><link rel="prefetch" href="/assets/js/31.84253b0d.js"><link rel="prefetch" href="/assets/js/32.dd28cd7f.js"><link rel="prefetch" href="/assets/js/33.73bdc1bd.js"><link rel="prefetch" href="/assets/js/34.0051bfab.js"><link rel="prefetch" href="/assets/js/35.cc2db271.js"><link rel="prefetch" href="/assets/js/36.72d7081c.js"><link rel="prefetch" href="/assets/js/37.f949e85a.js"><link rel="prefetch" href="/assets/js/38.e08f9e55.js"><link rel="prefetch" href="/assets/js/39.caa0e33d.js"><link rel="prefetch" href="/assets/js/4.64767ca3.js"><link rel="prefetch" href="/assets/js/40.633c9b9b.js"><link rel="prefetch" href="/assets/js/41.a2e08f47.js"><link rel="prefetch" href="/assets/js/42.78fb0eb8.js"><link rel="prefetch" href="/assets/js/43.91db8b5c.js"><link rel="prefetch" href="/assets/js/44.da582a10.js"><link rel="prefetch" href="/assets/js/45.51caff4b.js"><link rel="prefetch" href="/assets/js/46.aa6eb90c.js"><link rel="prefetch" href="/assets/js/47.6ac3964d.js"><link rel="prefetch" href="/assets/js/48.bb6466f8.js"><link rel="prefetch" href="/assets/js/49.c41a1d10.js"><link rel="prefetch" href="/assets/js/5.e37bb069.js"><link rel="prefetch" href="/assets/js/50.90482621.js"><link rel="prefetch" href="/assets/js/51.ba7b9e4e.js"><link rel="prefetch" href="/assets/js/52.b3690ba2.js"><link rel="prefetch" href="/assets/js/54.48986b22.js"><link rel="prefetch" href="/assets/js/55.f581ba76.js"><link rel="prefetch" href="/assets/js/6.78b451bc.js"><link rel="prefetch" href="/assets/js/7.70f4eb2b.js"><link rel="prefetch" href="/assets/js/8.47d063a0.js"><link rel="prefetch" href="/assets/js/9.c49d4f9f.js">
+    <link rel="stylesheet" href="/assets/css/0.styles.d6cb0b22.css">
+  </head>
+  <body>
+    <div id="app" data-server-rendered="true"><div class="theme-container no-sidebar" data-v-1156296a><div data-v-1156296a><div id="loader-wrapper" class="loading-wrapper" data-v-d48f4d20 data-v-1156296a data-v-1156296a><div class="loader-main" data-v-d48f4d20><div data-v-d48f4d20></div><div data-v-d48f4d20></div><div data-v-d48f4d20></div><div data-v-d48f4d20></div></div> <!----> <!----></div> <div class="password-shadow password-wrapper-out" style="display:none;" data-v-4e82dffc data-v-1156296a data-v-1156296a><h3 class="title" data-v-4e82dffc data-v-4e82dffc>小白の生活馆</h3> <p class="description" data-v-4e82dffc data-v-4e82dffc>小白の生活馆</p> <label id="box" class="inputBox" data-v-4e82dffc data-v-4e82dffc><input type="password" value="" data-v-4e82dffc> <span data-v-4e82dffc>Konck! Knock!</span> <button data-v-4e82dffc>OK</button></label> <div class="footer" data-v-4e82dffc data-v-4e82dffc><span data-v-4e82dffc><i class="iconfont reco-theme" data-v-4e82dffc></i> <a target="blank" href="https://vuepress-theme-reco.recoluan.com" data-v-4e82dffc>vuePress-theme-reco</a></span> <span data-v-4e82dffc><i class="iconfont reco-copyright" data-v-4e82dffc></i> <a data-v-4e82dffc><span data-v-4e82dffc>高压锅里的小白</span>
+            
+          <span data-v-4e82dffc>2020 - </span>
+          2021
+        </a></span></div></div> <div class="hide" data-v-1156296a><header class="navbar" data-v-1156296a><div class="sidebar-button"><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" role="img" viewBox="0 0 448 512" class="icon"><path fill="currentColor" d="M436 124H12c-6.627 0-12-5.373-12-12V80c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12zm0 160H12c-6.627 0-12-5.373-12-12v-32c0-6.627 5.373-12 12-12h424c6.627 0 12 5.373 12 12v32c0 6.627-5.373 12-12 12z"></path></svg></div> <a href="/" class="home-link router-link-active"><img src="/img/avatar.jpeg" alt="小白の生活馆" class="logo"> <span class="site-name">小白の生活馆</span></a> <div class="links"><div class="color-picker"><a class="color-button"><i class="iconfont reco-color"></i></a> <div class="color-picker-menu" style="display:none;"><div class="mode-options"><h4 class="title">Choose mode</h4> <ul class="color-mode-options"><li class="dark">dark</li><li class="auto active">auto</li><li class="light">light</li></ul></div></div></div> <div class="search-box"><i class="iconfont reco-search"></i> <input aria-label="Search" autocomplete="off" spellcheck="false" value=""> <!----></div> <nav class="nav-links can-hide"><div class="nav-item"><a href="/" class="nav-link"><i class="iconfont reco-home"></i>
+  首页
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><a class="dropdown-title"><span class="title"><i class="iconfont reco-category"></i>
+      分类
+    </span> <span class="arrow right"></span></a> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/categories/算法/" class="nav-link"><i class="undefined"></i>
+  算法
+</a></li><li class="dropdown-item"><!----> <a href="/categories/数据库/" class="nav-link"><i class="undefined"></i>
+  数据库
+</a></li><li class="dropdown-item"><!----> <a href="/categories/设计模式/" class="nav-link"><i class="undefined"></i>
+  设计模式
+</a></li><li class="dropdown-item"><!----> <a href="/categories/Docker/" class="nav-link"><i class="undefined"></i>
+  Docker
+</a></li><li class="dropdown-item"><!----> <a href="/categories/Git/" class="nav-link"><i class="undefined"></i>
+  Git
+</a></li><li class="dropdown-item"><!----> <a href="/categories/Java/" class="nav-link"><i class="undefined"></i>
+  Java
+</a></li><li class="dropdown-item"><!----> <a href="/categories/Kubernetes/" class="nav-link"><i class="undefined"></i>
+  Kubernetes
+</a></li><li class="dropdown-item"><!----> <a href="/categories/Linux/" class="nav-link"><i class="undefined"></i>
+  Linux
+</a></li><li class="dropdown-item"><!----> <a href="/categories/工具/" class="nav-link"><i class="undefined"></i>
+  工具
+</a></li></ul></div></div><div class="nav-item"><a href="/tag/" class="nav-link"><i class="iconfont reco-tag"></i>
+  标签
+</a></div><div class="nav-item"><a href="/timeline/" class="nav-link"><i class="iconfont reco-date"></i>
+  时间轴
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><a class="dropdown-title"><span class="title"><i class="iconfont reco-message"></i>
+      关于
+    </span> <span class="arrow right"></span></a> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="https://github.com/xiaobai1226" target="_blank" rel="noopener noreferrer" class="nav-link external"><i class="iconfont reco-github"></i>
+  GitHub
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li><li class="dropdown-item"><!----> <a href="https://gitee.com/xiaobai1226" target="_blank" rel="noopener noreferrer" class="nav-link external"><i class="iconfont reco-mayun"></i>
+  码云
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li></ul></div></div> <!----></nav></div></header> <div class="sidebar-mask" data-v-1156296a></div> <aside class="sidebar" data-v-1156296a><div class="personal-info-wrapper" data-v-828910c6 data-v-1156296a><img src="/img/avatar.jpeg" alt="author-avatar" class="personal-img" data-v-828910c6> <h3 class="name" data-v-828910c6>
+    高压锅里的小白
+  </h3> <div class="num" data-v-828910c6><div data-v-828910c6><h3 data-v-828910c6>41</h3> <h6 data-v-828910c6>文章</h6></div> <div data-v-828910c6><h3 data-v-828910c6>16</h3> <h6 data-v-828910c6>标签</h6></div></div> <ul class="social-links" data-v-828910c6></ul> <hr data-v-828910c6></div> <nav class="nav-links"><div class="nav-item"><a href="/" class="nav-link"><i class="iconfont reco-home"></i>
+  首页
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><a class="dropdown-title"><span class="title"><i class="iconfont reco-category"></i>
+      分类
+    </span> <span class="arrow right"></span></a> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="/categories/算法/" class="nav-link"><i class="undefined"></i>
+  算法
+</a></li><li class="dropdown-item"><!----> <a href="/categories/数据库/" class="nav-link"><i class="undefined"></i>
+  数据库
+</a></li><li class="dropdown-item"><!----> <a href="/categories/设计模式/" class="nav-link"><i class="undefined"></i>
+  设计模式
+</a></li><li class="dropdown-item"><!----> <a href="/categories/Docker/" class="nav-link"><i class="undefined"></i>
+  Docker
+</a></li><li class="dropdown-item"><!----> <a href="/categories/Git/" class="nav-link"><i class="undefined"></i>
+  Git
+</a></li><li class="dropdown-item"><!----> <a href="/categories/Java/" class="nav-link"><i class="undefined"></i>
+  Java
+</a></li><li class="dropdown-item"><!----> <a href="/categories/Kubernetes/" class="nav-link"><i class="undefined"></i>
+  Kubernetes
+</a></li><li class="dropdown-item"><!----> <a href="/categories/Linux/" class="nav-link"><i class="undefined"></i>
+  Linux
+</a></li><li class="dropdown-item"><!----> <a href="/categories/工具/" class="nav-link"><i class="undefined"></i>
+  工具
+</a></li></ul></div></div><div class="nav-item"><a href="/tag/" class="nav-link"><i class="iconfont reco-tag"></i>
+  标签
+</a></div><div class="nav-item"><a href="/timeline/" class="nav-link"><i class="iconfont reco-date"></i>
+  时间轴
+</a></div><div class="nav-item"><div class="dropdown-wrapper"><a class="dropdown-title"><span class="title"><i class="iconfont reco-message"></i>
+      关于
+    </span> <span class="arrow right"></span></a> <ul class="nav-dropdown" style="display:none;"><li class="dropdown-item"><!----> <a href="https://github.com/xiaobai1226" target="_blank" rel="noopener noreferrer" class="nav-link external"><i class="iconfont reco-github"></i>
+  GitHub
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li><li class="dropdown-item"><!----> <a href="https://gitee.com/xiaobai1226" target="_blank" rel="noopener noreferrer" class="nav-link external"><i class="iconfont reco-mayun"></i>
+  码云
+  <span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li></ul></div></div> <!----></nav> <!----> </aside> <div class="password-shadow password-wrapper-in" style="display:none;" data-v-4e82dffc data-v-1156296a><h3 class="title" data-v-4e82dffc data-v-4e82dffc>Docker安装Ceph集群</h3> <!----> <label id="box" class="inputBox" data-v-4e82dffc data-v-4e82dffc><input type="password" value="" data-v-4e82dffc> <span data-v-4e82dffc>Konck! Knock!</span> <button data-v-4e82dffc>OK</button></label> <div class="footer" data-v-4e82dffc data-v-4e82dffc><span data-v-4e82dffc><i class="iconfont reco-theme" data-v-4e82dffc></i> <a target="blank" href="https://vuepress-theme-reco.recoluan.com" data-v-4e82dffc>vuePress-theme-reco</a></span> <span data-v-4e82dffc><i class="iconfont reco-copyright" data-v-4e82dffc></i> <a data-v-4e82dffc><span data-v-4e82dffc>高压锅里的小白</span>
+            
+          <span data-v-4e82dffc>2020 - </span>
+          2021
+        </a></span></div></div> <div data-v-1156296a><main class="page"><section><div class="page-title"><h1 class="title">Docker安装Ceph集群</h1> <div data-v-1ff7123e><i class="iconfont reco-account" data-v-1ff7123e><span data-v-1ff7123e>高压锅里的小白</span></i> <i class="iconfont reco-date" data-v-1ff7123e><span data-v-1ff7123e>2021/10/8</span></i> <i class="iconfont reco-eye" data-v-1ff7123e><span id="/blogs/linux/2021/10/linux-ceph-install.html" data-flag-title="Your Article Title" class="leancloud-visitors" data-v-1ff7123e><a class="leancloud-visitors-count" style="font-size:.9rem;font-weight:normal;color:#999;"></a></span></i> <i class="tags iconfont reco-tag" data-v-1ff7123e><span class="tag-item" data-v-1ff7123e>linux</span><span class="tag-item" data-v-1ff7123e>docker</span><span class="tag-item" data-v-1ff7123e>ceph</span></i></div></div> <div class="theme-reco-content content__default"><h2 id="环境"><a href="#环境" class="header-anchor">#</a> 环境</h2> <ol><li>系统版本：Redhat7.8</li> <li>Ceph的docker镜像版本：nautilus</li> <li>Docker版本：20.10.8</li></ol> <h2 id="介绍"><a href="#介绍" class="header-anchor">#</a> 介绍</h2> <p>  Ceph是一个统一的分布式存储系统，设计初衷是提供较好的性能、可靠性和可扩展性。<br>
+  Ceph项目最早起源于Sage就读博士期间的工作（最早的成果于2004年发表），并随后贡献给开源社区。在经过了数年的发展之后，目前已得到众多云计算厂商的支持并被广泛应用。RedHat及OpenStack都可与Ceph整合以支持虚拟机镜像的后端存储。</p> <h3 id="ceph特点"><a href="#ceph特点" class="header-anchor">#</a> Ceph特点</h3> <ol><li>高性能
+<ul><li>摒弃了传统的集中式存储元数据寻址的方案，采用CRUSH算法，数据分布均衡，并行度高。</li> <li>考虑了容灾域的隔离，能够实现各类负载的副本放置规则，例如跨机房、机架感知等。</li> <li>能够支持上千个存储节点的规模，支持TB到PB级的数据。</li></ul></li> <li>高可用性
+<ul><li>副本数可以灵活控制。</li> <li>支持故障域分隔，数据强一致性。</li> <li>多种故障场景自动进行修复自愈。</li> <li>没有单点故障，自动管理。</li></ul></li> <li>高可扩展性
+<ul><li>去中心化。</li> <li>扩展灵活。</li> <li>随着节点增加而线性增长。</li></ul></li> <li>特性丰富
+<ul><li>支持三种存储接口：块存储、文件存储、对象存储。</li> <li>支持自定义接口，支持多种语言驱动。</li></ul></li></ol> <h2 id="架构规划"><a href="#架构规划" class="header-anchor">#</a> 架构规划</h2> <h2 id="前期准备"><a href="#前期准备" class="header-anchor">#</a> 前期准备</h2> <p>部署Ceph之前我们需要对自身机器的环境做一个前期操作。主要涉及到防火墙，主机名等设置。</p> <ol><li>关闭防火墙</li></ol> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code>systemctl stop firewalld
+systemctl disable firewalld
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br></div></div><ol start="2"><li>关闭selinux(linux的安全子系统)</li></ol> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code><span class="token function">sed</span> -i <span class="token string">'s/enforcing/disabled/'</span> /etc/selinux/config
+setenforce <span class="token number">0</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br></div></div><div class="custom-block warning"><p class="title"></p><p>正式环境实际部署时，最好通过加入IP白名单的方式来操作，而不是直接关闭防火墙。</p></div><ol start="3"><li>设置主机名，分别把三台虚拟机的主机名设置成想设置的名称，本文为obptest2，obptest3，obptest4。</li></ol> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code>hostnamectl set-hostname obptest2
+hostnamectl set-hostname obptest3
+hostnamectl set-hostname obptest4
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br></div></div><ol start="4"><li><p>SSH免密登陆配置</p> <ul><li><p>在三个节点上分别执行下列命令配置host，需将ip与主机名替换为自己服务器的</p> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code><span class="token function">cat</span> <span class="token operator">&gt;&gt;</span> /etc/hosts <span class="token operator">&lt;&lt;</span><span class="token string">EOF
+10.169.136.38 obptest2
+10.169.136.39 obptest3
+10.169.136.40 obptest4
+EOF</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br></div></div></li> <li><p>在主节点obptest2配置免密登录到obptest3和obptest4
+下面命令在主节点obptest2上执行。</p> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code>ssh-keygen
+<span class="token comment">#把密钥发给obptest3、obptest4</span>
+ssh-copy-id obptest3 
+ssh-copy-id obptest4
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br></div></div></li></ul></li> <li><p>内核参数优化</p></li></ol> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code><span class="token comment">#调整内核参数</span>
+<span class="token function">cat</span> <span class="token operator">&gt;&gt;</span> /etc/sysctl.conf <span class="token operator">&lt;&lt;</span> <span class="token string">EOF
+kernel.pid_max=4194303
+vm.swappiness = 0
+EOF</span>
+sysctl -p
+<span class="token comment"># read_ahead, 通过数据预读并且记载到随机访问内存方式提高磁盘读操作，根据一些Ceph的公开分享，8192是比较理想的值</span>
+<span class="token builtin class-name">echo</span> <span class="token string">&quot;8192&quot;</span> <span class="token operator">&gt;</span> /sys/block/sda/queue/read_ahead_kb
+<span class="token comment"># I/O Scheduler，关于I/O Scheculder的调整，简单说SSD要用noop，SATA/SAS使用deadline。</span>
+<span class="token builtin class-name">echo</span> <span class="token string">&quot;deadline&quot;</span> <span class="token operator">&gt;</span> /sys/block/sda/queue/scheduler
+<span class="token builtin class-name">echo</span> <span class="token string">&quot;noop&quot;</span> <span class="token operator">&gt;</span> /sys/block/sda/queue/scheduler
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br></div></div><ol start="6"><li>打开ntp服务<br>
+ntp服务的作用是用于同步不同机器的时间。如果不打开ntp服务的话，则有可能会出现 clock skew detected on mon.obptest2, mon.obptest3这种问题。</li></ol> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code><span class="token comment">#查看ntp，如果状态是inactive，则表示没启动</span>
+systemctl status ntpd
+<span class="token comment">#启动ntp服务</span>
+systemctl start ntpd
+<span class="token comment">#设置开启自启动ntp服务</span>
+systemctl <span class="token builtin class-name">enable</span> ntpd
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br></div></div><ol start="7"><li><p>安装docker<br>
+所有节点均需安装，具体安装步骤见：<a href="/blogs/docker/2021/08/docker-install.html">Docker安装教程</a></p></li> <li><p>其他配置<br>
+将容器内的ceph命令alias到本地，方便使用，其他命令也以参考添加</p></li></ol> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code><span class="token builtin class-name">echo</span> <span class="token string">'alias ceph=&quot;docker exec mon ceph&quot;'</span> <span class="token operator">&gt;&gt;</span> /etc/profile
+<span class="token builtin class-name">source</span> /etc/profile
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br></div></div><h2 id="部署"><a href="#部署" class="header-anchor">#</a> 部署</h2> <h3 id="创建ceph目录"><a href="#创建ceph目录" class="header-anchor">#</a> 创建Ceph目录</h3> <ol><li>创建目录<br>
+在宿主机上创建Ceph目录与容器建立映射，便于直接操纵管理Ceph配置文件，以root身份在主节点obptest2上创建文件夹，命令如下：</li></ol> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code><span class="token function">mkdir</span> -p /app/ceph/<span class="token punctuation">{</span>admin,etc,lib,logs,data<span class="token punctuation">}</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div><div class="custom-block tip"><p class="title"></p><p>该命令会一次创建5个指定的目录，注意逗号分隔，不能有空格。其中：</p> <ol><li>admin文件夹下用于存储启动脚本</li> <li>etc文件夹下存放了ceph.conf等配置文件</li> <li>lib文件夹下存放了各组件的密钥文件</li> <li>logs文件夹下存放了ceph的日志文件</li> <li>data文件夹用于挂载文件</li></ol></div><ol start="2"><li>对docker内用户进行授权</li></ol> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code><span class="token comment"># docker内用户id是167，这里进行授权</span>
+<span class="token function">chown</span> -R <span class="token number">167</span>:167 /app/ceph/
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br></div></div><h3 id="拉取ceph镜像"><a href="#拉取ceph镜像" class="header-anchor">#</a> 拉取Ceph镜像</h3> <div class="custom-block warning"><p class="title"></p><p>拉取时注意版本，不要贸然采用最新版，有些会存在缺陷，安装的时候会出现问题，这里采用的nautilus版本。</p></div><div class="language-shell line-numbers-mode"><pre class="language-shell"><code>docker pull ceph/daemon:master-4d96298-nautilus-centos-7-x86_64
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div><h3 id="启动mon服务"><a href="#启动mon服务" class="header-anchor">#</a> 启动MON服务</h3> <p>三台节点上都需安装Mon服务。先在主节点操作。</p> <ol><li>在主节点的/app/ceph/admin目录下创建start_mon.sh脚本：</li></ol> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code><span class="token operator">!</span>/bin/bash
+docker run -d --net<span class="token operator">=</span>host <span class="token punctuation">\</span>
+    --name<span class="token operator">=</span>ceph-mon <span class="token punctuation">\</span>
+    -v /etc/localtime:/etc/localtime <span class="token punctuation">\</span>
+    -v /app/ceph/etc:/etc/ceph <span class="token punctuation">\</span>
+    -v /app/ceph/lib:/var/lib/ceph <span class="token punctuation">\</span>
+    -v /app/ceph/logs:/var/log/ceph <span class="token punctuation">\</span>
+    -e <span class="token assign-left variable">MON_IP</span><span class="token operator">=</span><span class="token number">10.169</span>.136.38,10.169.136.39,10.169.136.40 <span class="token punctuation">\</span>
+    -e <span class="token assign-left variable">CEPH_PUBLIC_NETWORK</span><span class="token operator">=</span><span class="token number">10.169</span>.136.0/24 <span class="token punctuation">\</span>
+    ceph/daemon:master-4d96298-nautilus-centos-7-x86_64 mon
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br></div></div><div class="custom-block tip"><p class="title"></p><ol><li>name参数，指定节点名称， 这里设为ceph-mon</li> <li>建立宿主机与容器的目录映射关系，包含etc、lib、logs目录</li> <li>MON_IP 参数指定mon服务的节点IP信息</li> <li>CEPH_PUBLIC_NETWORK参数，指定mon的ip网段信息，如果跨网段需写上所有的网段（注意这里是24位，将最后一位改为0就可以）。</li> <li>最后指定镜像版本， mon为参数， 代表启动的是mon服务，不能乱填。</li></ol></div><ol start="2"><li>给脚本增加权限：</li></ol> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code><span class="token function">chmod</span> <span class="token number">755</span> -R  /app/ceph/admin/start_mon.sh
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div><ol start="3"><li>启动mon服务：</li></ol> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code>/app/ceph/admin/start_mon.sh
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div><ol start="4"><li>创建Ceph配置文件</li></ol> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code><span class="token function">vim</span> /app/ceph/etc/ceph.conf
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div><p>配置内容及说明：</p> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code><span class="token punctuation">[</span>global<span class="token punctuation">]</span>
+fsid <span class="token operator">=</span> 646aa796-0240-4dd8-83b3-8781779a8feb
+<span class="token comment"># mon节点名称</span>
+mon initial members <span class="token operator">=</span> CENTOS7-1
+<span class="token comment"># mon 主机地址信息</span>
+mon <span class="token function">host</span> <span class="token operator">=</span> <span class="token number">10.169</span>.136.38,10.169.136.39,10.169.136.40
+<span class="token comment"># 对外访问的IP网段</span>
+public network <span class="token operator">=</span> <span class="token number">10.169</span>.136.0/24
+<span class="token comment"># 集群IP网段</span>
+cluster network <span class="token operator">=</span> <span class="token number">10.169</span>.136.0/24
+<span class="token comment"># journal 大小 ， 一般设为（磁盘带宽 * 文件同步刷新时间）的2倍</span>
+osd journal size <span class="token operator">=</span> <span class="token number">100</span>
+<span class="token comment"># 设置pool池默认分配数量</span>
+osd pool default size <span class="token operator">=</span> <span class="token number">2</span>
+<span class="token comment"># 容忍更多的时钟误差</span>
+mon clock drift allowed <span class="token operator">=</span> <span class="token number">10</span>
+mon clock drift warn backoff <span class="token operator">=</span> <span class="token number">30</span>
+<span class="token comment"># 允许删除pool</span>
+mon_allow_pool_delete <span class="token operator">=</span> <span class="token boolean">true</span>
+<span class="token punctuation">[</span>mgr<span class="token punctuation">]</span>
+<span class="token comment"># 开启WEB仪表盘</span>
+mgr modules <span class="token operator">=</span> dashboard
+<span class="token punctuation">[</span>client.rgw.CENTOS7-1<span class="token punctuation">]</span>
+<span class="token comment"># 设置rgw网关的web访问端口</span>
+rgw_frontends <span class="token operator">=</span> <span class="token string">&quot;civetweb port=20003&quot;</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br><span class="line-number">4</span><br><span class="line-number">5</span><br><span class="line-number">6</span><br><span class="line-number">7</span><br><span class="line-number">8</span><br><span class="line-number">9</span><br><span class="line-number">10</span><br><span class="line-number">11</span><br><span class="line-number">12</span><br><span class="line-number">13</span><br><span class="line-number">14</span><br><span class="line-number">15</span><br><span class="line-number">16</span><br><span class="line-number">17</span><br><span class="line-number">18</span><br><span class="line-number">19</span><br><span class="line-number">20</span><br><span class="line-number">21</span><br><span class="line-number">22</span><br><span class="line-number">23</span><br><span class="line-number">24</span><br><span class="line-number">25</span><br></div></div><ol start="5"><li><p>检查mon服务状态
+出现HEALTH_OK代表服务启动成功：</p></li> <li><p>将主节点配置复制到其他两个节点， 覆盖/app/ceph/目录</p></li></ol> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code><span class="token function">scp</span> -r /app/ceph/ root@10.169.136.39:/app/
+<span class="token function">scp</span> -r /app/ceph/ root@10.169.136.40:/app/
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br></div></div><p>复制完成之后， 分别在其他两个节点启动mon服务</p> <ol start="7"><li>检查集群状态
+这里我们只搭建了三个mon节点， 正常的话可以看到已成功组件集群：</li></ol> <h3 id="启动osd服务"><a href="#启动osd服务" class="header-anchor">#</a> 启动OSD服务</h3> <p>OSD服务是对象存储守护进程，负责把对象存储到本地文件系统，必须要有一块独立的磁盘作为存储，如果没有独立磁盘则需要在Linux下面创建一个虚拟磁盘进行挂载。<br>
+下面分别介绍两种挂载方式：</p> <h4 id="无独立磁盘"><a href="#无独立磁盘" class="header-anchor">#</a> 无独立磁盘</h4> <p>如果没有独立磁盘，我们可以创建一个虚拟磁盘进行挂载，步骤如下：</p> <ol><li>初始化10T的镜像文件：</li></ol> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code><span class="token function">mkdir</span> -p /app/ceph/ceph-disk <span class="token function">dd</span> <span class="token assign-left variable">if</span><span class="token operator">=</span>/dev/mapper/datavg-lv_desc_1 <span class="token assign-left variable">of</span><span class="token operator">=</span>/app/ceph/ceph-disk/ceph-disk-01 <span class="token assign-left variable">bs</span><span class="token operator">=</span>1T <span class="token assign-left variable">count</span><span class="token operator">=</span><span class="token number">10</span>
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div><ol start="2"><li>将镜像文件虚拟成块设备：</li></ol> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code>losetup -f /app/ceph/ceph-disk/ceph-disk-01 
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div><ol start="3"><li>格式化（名称根据fdisk -l进行查询）：</li></ol> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code>mkfs.xfs -f /dev/loop0 
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div><ol start="4"><li>挂载文件系统，就是将loop0磁盘挂载到/dev/osd目录下,</li></ol> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code><span class="token function">mkdir</span> -p /dev/osd 
+
+<span class="token function">mount</span> /dev/loop0 /dev/osd 
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br><span class="line-number">3</span><br></div></div><h4 id="有独立磁盘"><a href="#有独立磁盘" class="header-anchor">#</a> 有独立磁盘</h4> <ol><li>直接格式化</li></ol> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code><span class="token comment"># 名称根据fdisk -l进行查询</span>
+mkfs.xfs -f /dev/sdb
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br><span class="line-number">2</span><br></div></div><ol start="2"><li>挂载文件系统：</li></ol> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code><span class="token function">mkdir</span> -p /dev/osd <span class="token function">mount</span> /dev/sdb /dev/osd 
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div><h4 id="查看挂载结果"><a href="#查看挂载结果" class="header-anchor">#</a> 查看挂载结果</h4> <div class="language-shell line-numbers-mode"><pre class="language-shell"><code><span class="token function">df</span> -h
+</code></pre> <div class="line-numbers-wrapper"><span class="line-number">1</span><br></div></div><h3 id="启动osd服务-2"><a href="#启动osd服务-2" class="header-anchor">#</a> 启动OSD服务</h3> <p>以下步骤在三台节点依次进行</p> <ol><li>创建OSD磁盘
+OSD服务是对象存储守护进程， 负责把对象存储到本地文件系统， 必须要有一块独立的磁盘作为存储。</li></ol> <h3 id="启动mgr服务"><a href="#启动mgr服务" class="header-anchor">#</a> 启动mgr服务</h3> <h3 id="启动rgw服务"><a href="#启动rgw服务" class="header-anchor">#</a> 启动rgw服务</h3> <h3 id="启动mds服务"><a href="#启动mds服务" class="header-anchor">#</a> 启动mds服务</h3> <h3 id="安装dashboard管理后台"><a href="#安装dashboard管理后台" class="header-anchor">#</a> 安装Dashboard管理后台</h3> <h3 id="创建fs文件系统"><a href="#创建fs文件系统" class="header-anchor">#</a> 创建FS文件系统</h3> <h3 id=""><a href="#" class="header-anchor">#</a></h3> <ol><li>拉取ceph
+这里用到了 dockerhub 上最流行的 ceph/daemon 镜像（这里需要拉取nautilus版本的ceph，latest-nautilus）</li></ol> <p>docker pull ceph/daemon:latest-nautilus
+5. 编写脚本（脚本都放在admin文件夹下）</p> <ol><li>start_mon.sh</li></ol> <p>!/bin/bash
+docker run -d --net=host <br>
+--name=mon <br>
+-v /etc/localtime:/etc/localtime <br>
+-v /usr/local/ceph/etc:/etc/ceph <br>
+-v /usr/local/ceph/lib:/var/lib/ceph <br>
+-v /usr/local/ceph/logs:/var/log/ceph <br>
+-e MON_IP=192.168.161.137,192.168.161.135,192.168.161.136 <br>
+-e CEPH_PUBLIC_NETWORK=192.168.161.0/24 <br>
+ceph/daemon:latest-nautilus  mon
+这个脚本是为了启动监视器，监视器的作用是维护整个Ceph集群的全局状态。一个集群至少要有一个监视器，最好要有奇数个监视器。方便当一个监视器挂了之后可以选举出其他可用的监视器。启动脚本说明： 1. name参数，指定节点名称，这里设为mon 2. -v xxx:xxx 是建立宿主机与容器的目录映射关系，包含 etc、lib、logs目录。 3. MON_IP是Docker运行的IP地址（通过ifconfig来查询，取ens33里的inet那个IP）,这里我们有3台服务器，那么MAN_IP需要写上3个IP，如果IP是跨网段的CEPH_PUBLIC_NETWORK必须写上所有网段。 4. CEPH_PUBLIC_NETWORK配置了运行Docker主机所有网段 这里必须指定nautilus版本，不然会默认操作最新版本ceph，mon必须与前面定义的name保持一致。</p> <ol start="2"><li>start_osd.sh</li></ol> <p>#!/bin/bash
+docker run -d <br>
+--name=osd <br>
+--net=host <br>
+--restart=always <br>
+--privileged=true <br>
+--pid=host <br>
+-v /etc/localtime:/etc/localtime <br>
+-v /usr/local/ceph/etc:/etc/ceph <br>
+-v /usr/local/ceph/lib:/var/lib/ceph <br>
+-v /usr/local/ceph/logs:/var/log/ceph <br>
+-v /dev/osd:/var/lib/ceph/osd <br>
+ceph/daemon:latest-nautilus  osd_directory
+这个脚本是用于启动OSD组件的，OSD（Object Storage Device）是RADOS组件，其作用是用于存储资源。 脚本说明： 1. name 是用于指定OSD容器的名称
+2. net 是用于指定host，就是前面我们配置host 3. restart指定为always，使osd组件可以在down时重启。 4.privileged是用于指定该osd是专用的。 这里我们采用的是osd_directory 镜像模式</p> <ol start="3"><li>start_mgr.sh</li></ol> <p>#!/bin/bash
+docker run -d --net=host  <br>
+--name=mgr <br>
+-v /etc/localtime:/etc/localtime <br>
+-v /usr/local/ceph/etc:/etc/ceph <br>
+-v /usr/local/ceph/lib:/var/lib/ceph <br>
+-v /usr/local/ceph/logs:/var/log/ceph <br>
+ceph/daemon:latest-nautilus mgr
+这个脚本是用于启动mgr组件，它的主要作用是分担和扩展monitor的部分功能，提供图形化的管理界面以便我们更好的管理ceph存储系统。其启动脚本比较简单，在此不再赘述。</p> <ol start="4"><li>start_rgw.sh</li></ol> <p>#!/bin/bash
+docker run <br>
+-d --net=host <br>
+--name=rgw <br>
+-v /etc/localtime:/etc/localtime <br>
+-v /usr/local/ceph/etc:/etc/ceph <br>
+-v /usr/local/ceph/lib:/var/lib/ceph <br>
+-v /usr/local/ceph/logs:/var/log/ceph <br>
+ceph/daemon:latest-nautilus rgw
+该脚本主要是用于启动rgw组件，rgw（Rados GateWay）作为对象存储网关系统，一方面扮演RADOS集群客户端角色，为对象存储应用提供数据存储，另一方面扮演HTTP服务端角色，接受并解析互联网传送的数据。</p> <ol start="6"><li>执行脚本
+启动mon
+首先在主节点ceph1上执行start_mon.sh脚本，启动后通过docker ps -a|grep mon查看启动结果，启动成功之后生成配置数据，在ceph主配置文件中，追加如下内容：
+cat &gt;&gt;/usr/local/ceph/etc/ceph.conf &lt;&lt;EOF</li></ol> <h1 id="容忍更多的时钟误差"><a href="#容忍更多的时钟误差" class="header-anchor">#</a> 容忍更多的时钟误差</h1> <p>mon clock drift allowed = 2
+mon clock drift warn backoff = 30</p> <h1 id="允许删除pool"><a href="#允许删除pool" class="header-anchor">#</a> 允许删除pool</h1> <p>mon_allow_pool_delete = true</p> <p>[mgr]</p> <h1 id="开启web仪表盘"><a href="#开启web仪表盘" class="header-anchor">#</a> 开启WEB仪表盘</h1> <p>mgr modules = dashboard
+[client.rgw.ceph1]</p> <h1 id="设置rgw网关的web访问端口"><a href="#设置rgw网关的web访问端口" class="header-anchor">#</a> 设置rgw网关的web访问端口</h1> <p>rgw_frontends = &quot;civetweb port=20003&quot;
+EOF
+拷贝所有数据（已包含脚本）到另外2台服务器
+scp -r /usr/local/ceph ceph2:/usr/local/
+scp -r /usr/local/ceph ceph3:/usr/local/
+通过远程ssh，在ceph2和ceph3上依次启动mon(启动前不要修改ceph.conf文件)
+ssh ceph2 bash /usr/local/ceph/admin/start_mon.sh
+ssh ceph3 bash /usr/local/ceph/admin/start_mon.sh
+启动后通过 ceph -s查看集群状态，如果能够看到ceph2和ceph3,则表示集群创建成功，此时的状态应该是HEALTH_OK状态。</p> <p>启动OSD
+在执行start_osd.sh脚本之前，首先需要在mon节点生成osd的密钥信息，不然直接启动会报错。命令如下：</p> <p>docker exec -it mon ceph auth get client.bootstrap-osd -o /var/lib/ceph/bootstrap-osd/ceph.keyring
+接着在主节点下执行如下命令：</p> <p>bash /usr/local/ceph/admin/start_osd.sh
+ssh ceph2 bash /usr/local/ceph/admin/start_osd.sh
+ssh ceph3 bash /usr/local/ceph/admin/start_osd.sh
+全部osd都启动之后，稍等片刻后，执行ceph -s查看状态，应该可以看到多了如下信息（总共3个osd）</p> <p>osd: 3 osds: 3 up, 3 in
+PS: osd的个数最好维持在奇数个。</p> <p>启动mgr
+直接在主节点ceph1上执行如下三个命令：</p> <p>bash /usr/local/ceph/admin/start_mgr.sh
+ssh ceph2 bash /usr/local/ceph/admin/start_mgr.sh
+ssh ceph3 bash /usr/local/ceph/admin/start_mgr.sh
+启动rgw
+同样的我们首先还是需要先在mon节点生成rgw的密钥信息，命令如下：</p> <p>docker exec mon ceph auth get client.bootstrap-rgw -o /var/lib/ceph/bootstrap-rgw/ceph.keyring
+接着在主节点ceph1上执行如下三个命令：</p> <p>bash /usr/local/ceph/admin/start_rgw.sh
+ssh ceph2 bash /usr/local/ceph/admin/start_rgw.sh
+ssh ceph3 bash /usr/local/ceph/admin/start_rgw.sh
+启动完成之后再通过ceph-s查看集群的状态</p> <p>安装Dashboard管理后台
+首先确定主节点，通过ceph -s命令查看集群状态，找到mgr为active的那个节点，如下：</p> <p>mgr: ceph1(active), standbys: ceph2, ceph3
+这里的主节点就是ceph1节点。 1. 开启dashboard功能</p> <p>docker exec mgr ceph mgr module enable dashboard
+创建登录用户与密码
+docker exec mgr ceph dashboard set-login-credentials admin test
+这里设置用户名为admin,密码为test。 3. 配置外部访问端口个，这里指定端口号是18080，可以自定义修改</p> <p>docker exec mgr ceph config set mgr mgr/dashboard/server_port 18080
+配置外部访问地址，这里我的主节点IP是192.168.161.137，你需要换成自己的IP地址。
+docker exec mgr ceph config set mgr mgr/dashboard/server_addr 192.168.161.137
+关闭https(如果没有证书或内网访问， 可以关闭)
+docker exec mgr ceph config set mgr mgr/dashboard/ssl false
+重启Mgr DashBoard服务
+docker restart mgr
+查看Mgr DashBoard服务
+docker exec mgr ceph mgr services
+最后通过 http://192.168.161.137:18080/#/dashboard 访问。</p> <p>查看整个集群信息
+至此，整个集群就已经搭建完毕，通过ceph -s命令，可以查看整个集群信息，我们规划的所有节点都已创建成功并加入集群</p> <p>关于重启mon服务失败问题</p> <p>如果修改了配置或者宿主机出现问题， 需要重启mon服务， 会出现不能正常启动的问题，查看容器日志， 最后一行提示：</p> <p>Existing mon, trying to rejoin cluster abort</p> <p>没有具体的原因， 解决的办法是删除/usr/local/ceph/lib/mon目录， 再重新启动， 但这会破坏原有配置与数据， 影响集群的正常运转，这是我们不能接受的， 无耐，只有研究它的启动脚本。（ 这不是Docker容器问题， 是Ceph的镜像脚本编写有点问题。） 将脚本拷贝出来：</p> <p>docker cp mon:/opt/ceph-container/bin/start_mon.sh .</p> <p>找到并修改以下内容：</p> <h1 id="注释此行-直接将v2v1复制为2-代表是走v2协议-以指定ip方式加入集群"><a href="#注释此行-直接将v2v1复制为2-代表是走v2协议-以指定ip方式加入集群" class="header-anchor">#</a> 注释此行，直接将v2v1复制为2，代表是走V2协议， 以指定IP方式加入集群</h1> <p>#v2v1=$(ceph-conf -c /etc/ceph/${CLUSTER}.conf 'mon host' | tr ',' '\n' | grep -c ${MON_IP})</p> <p>v2v1=2</p> <p>再将脚本复制至容器内：</p> <p>docker cp start_mon.sh mon:/opt/ceph-container/bin/start_mon.sh</p> <h2 id="参考"><a href="#参考" class="header-anchor">#</a> 参考</h2> <ul><li><a href="https://blog.csdn.net/hxx688/article/details/103440967?spm=1001.2014.3001.5501" target="_blank" rel="noopener noreferrer">https://blog.csdn.net/hxx688/article/details/103440967?spm=1001.2014.3001.5501<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li> <li><a href="https://zhuanlan.zhihu.com/p/379440526" target="_blank" rel="noopener noreferrer">https://zhuanlan.zhihu.com/p/379440526<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li> <li><a href="https://hub.docker.com/r/ceph/daemon" target="_blank" rel="noopener noreferrer">https://hub.docker.com/r/ceph/daemon<span><svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg> <span class="sr-only">(opens new window)</span></span></a></li></ul></div></section> <footer class="page-edit"><!----> <div class="last-updated"><span class="prefix">Last Updated: </span> <span class="time">2021/10/11 上午3:48:30</span></div></footer> <!----> <div class="comments-wrapper"><!----></div> <ul class="side-bar sub-sidebar-wrapper" style="width:12rem;" data-v-70334359><li class="level-2" data-v-70334359><a href="/blogs/linux/2021/10/linux-ceph-install.html#环境" class="sidebar-link reco-side-环境" data-v-70334359>环境</a></li><li class="level-2" data-v-70334359><a href="/blogs/linux/2021/10/linux-ceph-install.html#介绍" class="sidebar-link reco-side-介绍" data-v-70334359>介绍</a></li><li class="level-3" data-v-70334359><a href="/blogs/linux/2021/10/linux-ceph-install.html#ceph特点" class="sidebar-link reco-side-ceph特点" data-v-70334359>Ceph特点</a></li><li class="level-2" data-v-70334359><a href="/blogs/linux/2021/10/linux-ceph-install.html#架构规划" class="sidebar-link reco-side-架构规划" data-v-70334359>架构规划</a></li><li class="level-2" data-v-70334359><a href="/blogs/linux/2021/10/linux-ceph-install.html#前期准备" class="sidebar-link reco-side-前期准备" data-v-70334359>前期准备</a></li><li class="level-2" data-v-70334359><a href="/blogs/linux/2021/10/linux-ceph-install.html#部署" class="sidebar-link reco-side-部署" data-v-70334359>部署</a></li><li class="level-3" data-v-70334359><a href="/blogs/linux/2021/10/linux-ceph-install.html#创建ceph目录" class="sidebar-link reco-side-创建ceph目录" data-v-70334359>创建Ceph目录</a></li><li class="level-3" data-v-70334359><a href="/blogs/linux/2021/10/linux-ceph-install.html#拉取ceph镜像" class="sidebar-link reco-side-拉取ceph镜像" data-v-70334359>拉取Ceph镜像</a></li><li class="level-3" data-v-70334359><a href="/blogs/linux/2021/10/linux-ceph-install.html#启动mon服务" class="sidebar-link reco-side-启动mon服务" data-v-70334359>启动MON服务</a></li><li class="level-3" data-v-70334359><a href="/blogs/linux/2021/10/linux-ceph-install.html#启动osd服务" class="sidebar-link reco-side-启动osd服务" data-v-70334359>启动OSD服务</a></li><li class="level-3" data-v-70334359><a href="/blogs/linux/2021/10/linux-ceph-install.html#启动osd服务-2" class="sidebar-link reco-side-启动osd服务-2" data-v-70334359>启动OSD服务</a></li><li class="level-3" data-v-70334359><a href="/blogs/linux/2021/10/linux-ceph-install.html#启动mgr服务" class="sidebar-link reco-side-启动mgr服务" data-v-70334359>启动mgr服务</a></li><li class="level-3" data-v-70334359><a href="/blogs/linux/2021/10/linux-ceph-install.html#启动rgw服务" class="sidebar-link reco-side-启动rgw服务" data-v-70334359>启动rgw服务</a></li><li class="level-3" data-v-70334359><a href="/blogs/linux/2021/10/linux-ceph-install.html#启动mds服务" class="sidebar-link reco-side-启动mds服务" data-v-70334359>启动mds服务</a></li><li class="level-3" data-v-70334359><a href="/blogs/linux/2021/10/linux-ceph-install.html#安装dashboard管理后台" class="sidebar-link reco-side-安装dashboard管理后台" data-v-70334359>安装Dashboard管理后台</a></li><li class="level-3" data-v-70334359><a href="/blogs/linux/2021/10/linux-ceph-install.html#创建fs文件系统" class="sidebar-link reco-side-创建fs文件系统" data-v-70334359>创建FS文件系统</a></li><li class="level-3" data-v-70334359><a href="/blogs/linux/2021/10/linux-ceph-install.html#" class="sidebar-link reco-side-" data-v-70334359></a></li><li class="level-2" data-v-70334359><a href="/blogs/linux/2021/10/linux-ceph-install.html#参考" class="sidebar-link reco-side-参考" data-v-70334359>参考</a></li></ul></main> <!----></div></div></div></div><div class="global-ui"><div class="back-to-ceiling" style="right:1rem;bottom:6rem;width:2.5rem;height:2.5rem;border-radius:.25rem;line-height:2.5rem;display:none;" data-v-c6073ba8 data-v-c6073ba8><svg t="1574745035067" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="5404" class="icon" data-v-c6073ba8><path d="M526.60727968 10.90185116a27.675 27.675 0 0 0-29.21455937 0c-131.36607665 82.28402758-218.69155461 228.01873535-218.69155402 394.07834331a462.20625001 462.20625001 0 0 0 5.36959153 69.94390903c1.00431239 6.55289093-0.34802892 13.13561351-3.76865779 18.80351572-32.63518765 54.11355614-51.75690182 118.55860487-51.7569018 187.94566865a371.06718723 371.06718723 0 0 0 11.50484808 91.98906777c6.53300375 25.50556257 41.68394495 28.14064038 52.69160883 4.22606766 17.37162448-37.73630017 42.14135425-72.50938081 72.80769204-103.21549295 2.18761121 3.04276886 4.15646224 6.24463696 6.40373557 9.22774369a1871.4375 1871.4375 0 0 0 140.04691725 5.34970492 1866.36093723 1866.36093723 0 0 0 140.04691723-5.34970492c2.24727335-2.98310674 4.21612437-6.18497483 6.3937923-9.2178004 30.66633723 30.70611158 55.4360664 65.4791928 72.80769147 103.21549355 11.00766384 23.91457269 46.15860503 21.27949489 52.69160879-4.22606768a371.15156223 371.15156223 0 0 0 11.514792-91.99901164c0-69.36717486-19.13165746-133.82216804-51.75690182-187.92578088-3.42062944-5.66790279-4.76302748-12.26056868-3.76865837-18.80351632a462.20625001 462.20625001 0 0 0 5.36959269-69.943909c-0.00994388-166.08943902-87.32547796-311.81420293-218.6915546-394.09823051zM605.93803103 357.87693858a93.93749974 93.93749974 0 1 1-187.89594924 6.1e-7 93.93749974 93.93749974 0 0 1 187.89594924-6.1e-7z" p-id="5405" data-v-c6073ba8></path><path d="M429.50777625 765.63860547C429.50777625 803.39355007 466.44236686 1000.39046097 512.00932183 1000.39046097c45.56695499 0 82.4922232-197.00623328 82.5015456-234.7518555 0-37.75494459-36.9345906-68.35043303-82.4922232-68.34111062-45.57627738-0.00932239-82.52019037 30.59548842-82.51086798 68.34111062z" p-id="5406" data-v-c6073ba8></path></svg></div></div></div>
+    <script src="/assets/js/app.e8d8c089.js" defer></script><script src="/assets/js/3.4aa6dc7c.js" defer></script><script src="/assets/js/1.1aa8545e.js" defer></script><script src="/assets/js/53.0668ba79.js" defer></script>
+  </body>
+</html>
