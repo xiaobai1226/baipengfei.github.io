@@ -8,7 +8,6 @@ tags:
  - ceph
 categories:
  - Linux
-publish: false
 ---
 
 ## 环境
@@ -155,7 +154,7 @@ docker pull ceph/daemon:master-4d96298-nautilus-centos-7-x86_64
 三台节点上都需安装Mon服务。先在主节点操作。
 1. 在主节点的/app/ceph/admin目录下创建start_mon.sh脚本：
 ``` shell
-!/bin/bash
+#!/bin/bash
 docker run -d --net=host \
     --name=ceph-mon \
     -v /etc/localtime:/etc/localtime \
@@ -193,8 +192,8 @@ vim /app/ceph/etc/ceph.conf
 [global]
 fsid = 646aa796-0240-4dd8-83b3-8781779a8feb
 # mon节点名称
-mon initial members = CENTOS7-1
-# mon 主机地址信息
+mon initial members = obptest2
+# mon 主机地址信息，填写所属机器的IP
 mon host = 10.169.136.38,10.169.136.39,10.169.136.40
 # 对外访问的IP网段
 public network = 10.169.136.0/24
@@ -202,6 +201,8 @@ public network = 10.169.136.0/24
 cluster network = 10.169.136.0/24
 # journal 大小 ， 一般设为（磁盘带宽 * 文件同步刷新时间）的2倍
 osd journal size = 100
+
+# 需手动追加如下内容
 # 设置pool池默认分配数量
 osd pool default size = 2
 # 容忍更多的时钟误差
@@ -212,251 +213,364 @@ mon_allow_pool_delete = true
 [mgr]
 # 开启WEB仪表盘
 mgr modules = dashboard
-[client.rgw.CENTOS7-1]
+[client.rgw.obptest2]
 # 设置rgw网关的web访问端口
-rgw_frontends = "civetweb port=20003"
+rgw_frontends = "civetweb port=10083"
 ```
 
 5. 检查mon服务状态
+``` shell
+docker exec -it ceph-mon ceph -s
+```
 出现HEALTH_OK代表服务启动成功：
+![文件截图](/img/blogs/2021/10/ceph_mon_health_ok.png)
+::: warning 常见问题
+1. 若容器启动失败，可使用命令
+``` shell
+docker logs ceph-mon
+```
+若出现
+![文件截图](/img/blogs/2021/10/ceph_mon_docker_fail.png)
+可将启动脚本与配置文件mon ip参数暂时改为一个本机IP，如
+``` shell
+# 启动脚本
+-e MON_IP=10.169.136.38
+
+# 配置文件
+mon host = 10.169.136.38
+```
+然后删除现有问题容器，重新执行脚本，即可正常创建容器，容器启动后，再修改启动脚本与配置文件改回多IP形式，重启容器，即可正常启动
+
+2. 若容器启动失败，查看容器日志，提示如下信息  
+Existing mon, trying to rejoin cluster abort  
+这时需修改容器内的启动脚本
+``` shell
+# 将启动脚本复制出来
+docker cp ceph-mon:/opt/ceph-container/bin/start_mon.sh .
+
+# 注释此行，直接将v2v1复制为2，代表是走V2协议， 以指定IP方式加入集群
+#v2v1=$(ceph-conf -c /etc/ceph/${CLUSTER}.conf 'mon host' | tr ',' '\n' | grep -c ${MON_IP})
+v2v1=2
+
+# 将脚本复制回去
+docker cp start_mon.sh ceph-mon:/opt/ceph-container/bin/start_mon.sh 
+```
+重启容器即可恢复正常
+
+3. 容器启动成功，查看状态发现如下信息：
+![文件截图](/img/blogs/2021/10/ceph_mon_health_warn.png)
+可以执行
+``` shell
+# 禁用不安全模式
+docker exec -it ceph-mon ceph config set mon auth_allow_insecure_global_id_reclaim false
+```
+然后重启容器即可恢复正常
+:::
 
 6. 将主节点配置复制到其他两个节点， 覆盖/app/ceph/目录
 ``` shell
 scp -r /app/ceph/ root@10.169.136.39:/app/
 scp -r /app/ceph/ root@10.169.136.40:/app/
 ```
-复制完成之后， 分别在其他两个节点启动mon服务
+复制完成，修改相关配置信息后，分别在其他两个节点启动mon服务
 
 7. 检查集群状态
-这里我们只搭建了三个mon节点， 正常的话可以看到已成功组件集群：
-
+这里我们只搭建了三个mon节点， 正常的话可以看到已成功组建集群：
+![文件截图](/img/blogs/2021/10/ceph_mon_health_ok_all.png)
 
 ### 启动OSD服务
-OSD服务是对象存储守护进程，负责把对象存储到本地文件系统，必须要有一块独立的磁盘作为存储，如果没有独立磁盘则需要在Linux下面创建一个虚拟磁盘进行挂载。  
-下面分别介绍两种挂载方式：
-#### 无独立磁盘  
+OSD服务是对象存储守护进程，负责把对象存储到本地文件系统，必须要有一块独立的磁盘作为存储，如果没有独立磁盘则需要在Linux下面创建一个虚拟磁盘进行挂载。   
+以下步骤在三台节点依次进行
+1. 创建OSD磁盘  
+下面分别介绍两种挂载方式：  
+(1) 无独立磁盘  
 如果没有独立磁盘，我们可以创建一个虚拟磁盘进行挂载，步骤如下： 
-1. 初始化10T的镜像文件：
-``` shell
-mkdir -p /app/ceph/ceph-disk dd if=/dev/mapper/datavg-lv_desc_1 of=/app/ceph/ceph-disk/ceph-disk-01 bs=1T count=10
-```
-2. 将镜像文件虚拟成块设备：
-``` shell
-losetup -f /app/ceph/ceph-disk/ceph-disk-01 
-```
-3. 格式化（名称根据fdisk -l进行查询）：
-``` shell
-mkfs.xfs -f /dev/loop0 
-```
-4. 挂载文件系统，就是将loop0磁盘挂载到/dev/osd目录下,
-``` shell
-mkdir -p /dev/osd 
+   * 初始化10T的镜像文件：
+   ``` shell
+   mkdir -p /app/ceph/ceph-disk 
+   
+   dd if=/dev/mapper/datavg-lv_desc_1 of=/app/ceph/ceph-disk/ceph-disk-01 bs=1G count=10240
+   ```
+   * 将镜像文件虚拟成块设备：
+   ``` shell
+   losetup -f /app/ceph/ceph-disk/ceph-disk-01 
+   ```
+   * 格式化：
+   ``` shell
+   # 查询设备名称，结果为/dev/loop0 
+   fdisk -l
 
-mount /dev/loop0 /dev/osd 
-```
+   # 格式化
+   mkfs.xfs -f /dev/loop0 
+   ```
+   * 挂载文件系统，就是将loop0磁盘挂载到/dev/osd目录下,
+   ``` shell
+   mkdir -p /dev/osd 
 
-#### 有独立磁盘
-1. 直接格式化
-```shell
-# 名称根据fdisk -l进行查询
-mkfs.xfs -f /dev/sdb
-```  
-2. 挂载文件系统：
-``` shell
-mkdir -p /dev/osd mount /dev/sdb /dev/osd 
-```
+   mount /dev/loop0 /dev/osd 
+   ```
 
-#### 查看挂载结果
+(2) 有独立磁盘
+   * 直接格式化
+   ```shell
+   # 名称根据fdisk -l进行查询
+   mkfs.xfs -f /dev/sdb
+   ```  
+   * 挂载文件系统：
+   ``` shell
+   mkdir -p /dev/osd 
+   
+   mount /dev/datavg/lv_desc_2 /dev/osd 
+   ```
+
+（3）查看挂载结果
 ``` shell
 df -h
 ```
 
-### 启动OSD服务
-以下步骤在三台节点依次进行
-1. 创建OSD磁盘
-OSD服务是对象存储守护进程， 负责把对象存储到本地文件系统， 必须要有一块独立的磁盘作为存储。
-
-### 启动mgr服务
-
-### 启动rgw服务
-
-### 启动mds服务
-
-### 安装Dashboard管理后台
-
-### 创建FS文件系统
-
-### 
-
-
-
-1. 拉取ceph
-这里用到了 dockerhub 上最流行的 ceph/daemon 镜像（这里需要拉取nautilus版本的ceph，latest-nautilus）
-
-docker pull ceph/daemon:latest-nautilus
-5. 编写脚本（脚本都放在admin文件夹下）
-1. start_mon.sh
-
-!/bin/bash
-docker run -d --net=host \
-    --name=mon \
-    -v /etc/localtime:/etc/localtime \
-    -v /usr/local/ceph/etc:/etc/ceph \
-    -v /usr/local/ceph/lib:/var/lib/ceph \
-    -v /usr/local/ceph/logs:/var/log/ceph \
-    -e MON_IP=192.168.161.137,192.168.161.135,192.168.161.136 \
-    -e CEPH_PUBLIC_NETWORK=192.168.161.0/24 \
-    ceph/daemon:latest-nautilus  mon
-这个脚本是为了启动监视器，监视器的作用是维护整个Ceph集群的全局状态。一个集群至少要有一个监视器，最好要有奇数个监视器。方便当一个监视器挂了之后可以选举出其他可用的监视器。启动脚本说明： 1. name参数，指定节点名称，这里设为mon 2. -v xxx:xxx 是建立宿主机与容器的目录映射关系，包含 etc、lib、logs目录。 3. MON_IP是Docker运行的IP地址（通过ifconfig来查询，取ens33里的inet那个IP）,这里我们有3台服务器，那么MAN_IP需要写上3个IP，如果IP是跨网段的CEPH_PUBLIC_NETWORK必须写上所有网段。 4. CEPH_PUBLIC_NETWORK配置了运行Docker主机所有网段 这里必须指定nautilus版本，不然会默认操作最新版本ceph，mon必须与前面定义的name保持一致。
-
-2. start_osd.sh
-
+2. 在主节点的/app/ceph/admin目录下创建start_osd.sh脚本：
+``` shell
 #!/bin/bash
 docker run -d \
-    --name=osd \
+    --name=ceph-osd \
     --net=host \
-    --restart=always \
     --privileged=true \
     --pid=host \
     -v /etc/localtime:/etc/localtime \
-    -v /usr/local/ceph/etc:/etc/ceph \
-    -v /usr/local/ceph/lib:/var/lib/ceph \
-    -v /usr/local/ceph/logs:/var/log/ceph \
+    -v /app/ceph/etc:/etc/ceph \
+    -v /app/ceph/lib:/var/lib/ceph \
+    -v /app/ceph/logs:/var/log/ceph \
     -v /dev/osd:/var/lib/ceph/osd \
-    ceph/daemon:latest-nautilus  osd_directory
-这个脚本是用于启动OSD组件的，OSD（Object Storage Device）是RADOS组件，其作用是用于存储资源。 脚本说明： 1. name 是用于指定OSD容器的名称
-2. net 是用于指定host，就是前面我们配置host 3. restart指定为always，使osd组件可以在down时重启。 4.privileged是用于指定该osd是专用的。 这里我们采用的是osd_directory 镜像模式
+    ceph/daemon:master-4d96298-nautilus-centos-7-x86_64 osd_directory
+```
+::: tip
+这里我们采用的是osd_directory镜像模式，如果有独立磁盘的话，也可以采用osd_ceph_disk模式，无需格式化，直接指定设备名称即可，如`OSD_DEVICE=/dev/sdb`
+:::
 
-3. start_mgr.sh
+3. 给脚本增加权限：
+``` shell
+chmod 755 -R  /app/ceph/admin/start_osd.sh
+```
 
+4. 创建OSD密钥文件
+::: warning
+三台mon节点都需执行，且该命令是在容器mon节点服务上执行
+:::
+
+``` shell
+docker exec -it ceph-mon ceph auth get client.bootstrap-osd -o /var/lib/ceph/bootstrap-osd/ceph.keyring
+```
+
+5. 启动服务：
+``` shell
+/app/ceph/admin/start_osd.sh
+```
+
+6. 检查启动状态
+``` shell
+docker ps
+
+# 可以看到多了3个osd信息
+docker exec -it ceph-mon ceph -s
+```
+
+::: warning
+osd的个数最好维持在奇数个
+:::
+
+### 启动mgr服务
+需依次在3台节点上执行
+1. 在/app/ceph/admin目录下创建start_mgr.sh脚本：
+``` shell
 #!/bin/bash
 docker run -d --net=host  \
-  --name=mgr \
+  --name=ceph-mgr \
   -v /etc/localtime:/etc/localtime \
-  -v /usr/local/ceph/etc:/etc/ceph \
-  -v /usr/local/ceph/lib:/var/lib/ceph \
-  -v /usr/local/ceph/logs:/var/log/ceph \
-  ceph/daemon:latest-nautilus mgr
+  -v /app/ceph/etc:/etc/ceph \
+  -v /app/ceph/lib:/var/lib/ceph \
+  -v /app/ceph/logs:/var/log/ceph \
+  ceph/daemon:master-4d96298-nautilus-centos-7-x86_64 mgr
+```
 这个脚本是用于启动mgr组件，它的主要作用是分担和扩展monitor的部分功能，提供图形化的管理界面以便我们更好的管理ceph存储系统。其启动脚本比较简单，在此不再赘述。
 
-4. start_rgw.sh
+2. 启动mgr服务：
+``` shell
+/app/ceph/admin/start_mgr.sh
+```
 
+3. 检查启动状态
+``` shell
+docker ps
+
+# 可以看到多了3个mgr信息
+docker exec -it ceph-mon ceph -s
+```  
+
+### 启动rgw服务
+需依次在3台节点上执行
+1. 在/app/ceph/admin目录下创建start_rgw.sh脚本：
+``` shell
 #!/bin/bash
-docker run \
-    -d --net=host \
-    --name=rgw \
-    -v /etc/localtime:/etc/localtime \
-    -v /usr/local/ceph/etc:/etc/ceph \
-    -v /usr/local/ceph/lib:/var/lib/ceph \
-    -v /usr/local/ceph/logs:/var/log/ceph \
-    ceph/daemon:latest-nautilus rgw
+docker run -d --net=host  \
+  --name=ceph-rgw \
+  -v /etc/localtime:/etc/localtime \
+  -v /app/ceph/etc:/etc/ceph \
+  -v /app/ceph/lib:/var/lib/ceph \
+  -v /app/ceph/logs:/var/log/ceph \
+  ceph/daemon:master-4d96298-nautilus-centos-7-x86_64 rgw
+```
 该脚本主要是用于启动rgw组件，rgw（Rados GateWay）作为对象存储网关系统，一方面扮演RADOS集群客户端角色，为对象存储应用提供数据存储，另一方面扮演HTTP服务端角色，接受并解析互联网传送的数据。
 
-6. 执行脚本
-启动mon
-首先在主节点ceph1上执行start_mon.sh脚本，启动后通过docker ps -a|grep mon查看启动结果，启动成功之后生成配置数据，在ceph主配置文件中，追加如下内容：
-cat >>/usr/local/ceph/etc/ceph.conf <<EOF
-# 容忍更多的时钟误差
-mon clock drift allowed = 2
-mon clock drift warn backoff = 30
-# 允许删除pool
-mon_allow_pool_delete = true
+2. 创建rgw密钥文件
+::: warning
+三台mon节点都需执行，且该命令是在容器mon节点服务上执行
+:::
 
-[mgr]
-# 开启WEB仪表盘
-mgr modules = dashboard
-[client.rgw.ceph1]
-# 设置rgw网关的web访问端口
-rgw_frontends = "civetweb port=20003"
-EOF
-拷贝所有数据（已包含脚本）到另外2台服务器
-scp -r /usr/local/ceph ceph2:/usr/local/
-scp -r /usr/local/ceph ceph3:/usr/local/
-通过远程ssh，在ceph2和ceph3上依次启动mon(启动前不要修改ceph.conf文件)
-ssh ceph2 bash /usr/local/ceph/admin/start_mon.sh
-ssh ceph3 bash /usr/local/ceph/admin/start_mon.sh
-启动后通过 ceph -s查看集群状态，如果能够看到ceph2和ceph3,则表示集群创建成功，此时的状态应该是HEALTH_OK状态。
+``` shell
+docker exec ceph-mon ceph auth get client.bootstrap-rgw -o /var/lib/ceph/bootstrap-rgw/ceph.keyring
+```
 
-启动OSD
-在执行start_osd.sh脚本之前，首先需要在mon节点生成osd的密钥信息，不然直接启动会报错。命令如下：
+3. 启动服务：
+``` shell
+/app/ceph/admin/start_rgw.sh
+```
 
-docker exec -it mon ceph auth get client.bootstrap-osd -o /var/lib/ceph/bootstrap-osd/ceph.keyring
-接着在主节点下执行如下命令：
+4. 检查启动状态
+``` shell
+docker ps
 
-bash /usr/local/ceph/admin/start_osd.sh
-ssh ceph2 bash /usr/local/ceph/admin/start_osd.sh
-ssh ceph3 bash /usr/local/ceph/admin/start_osd.sh
-全部osd都启动之后，稍等片刻后，执行ceph -s查看状态，应该可以看到多了如下信息（总共3个osd）
+# 可以看到多了3个rgw信息
+docker exec -it ceph-mon ceph -s
+```
 
-osd: 3 osds: 3 up, 3 in
-PS: osd的个数最好维持在奇数个。
+### 启动mds服务
+需依次在3台节点上执行
+1. 在/app/ceph/admin目录下创建start_mds.sh脚本：
+``` shell
+#!/bin/bash
+docker run -d \
+   --net=host \
+   --name=ceph-mds \
+   --privileged=true \
+   -v /etc/localtime:/etc/localtime \
+   -v /app/ceph/etc:/etc/ceph \
+   -v /app/ceph/lib:/var/lib/ceph \
+   -v /app/ceph/logs:/var/log/ceph \
+   -e CEPHFS_CREATE=0 \
+   -e CEPHFS_METADATA_POOL_PG=512 \
+   -e CEPHFS_DATA_POOL_PG=512 \
+   ceph/daemon:master-4d96298-nautilus-centos-7-x86_64 mds
+```
+::: tip 说明
+1. CEPHFS_CREATE：是为METADATA服务生成文件系统，0表示不自动创建文件系统（默认值），1表示自动创建。
+2. CEPHFS_DATA_POOL_PG：是数据池的数量，默认为8。
+3. CEPHFS_METADATA_POOL_PG：是元数据池的数量，默认为8。
+:::
 
-启动mgr
-直接在主节点ceph1上执行如下三个命令：
+2. 启动服务：
+``` shell
+/app/ceph/admin/start_mds.sh
+```
 
-bash /usr/local/ceph/admin/start_mgr.sh
-ssh ceph2 bash /usr/local/ceph/admin/start_mgr.sh
-ssh ceph3 bash /usr/local/ceph/admin/start_mgr.sh
-启动rgw
-同样的我们首先还是需要先在mon节点生成rgw的密钥信息，命令如下：
+3. 检查启动状态
+``` shell
+docker ps
 
-docker exec mon ceph auth get client.bootstrap-rgw -o /var/lib/ceph/bootstrap-rgw/ceph.keyring
-接着在主节点ceph1上执行如下三个命令：
+# 可以看到多了mds信息
+docker exec -it ceph-mon ceph -s
+```
 
-bash /usr/local/ceph/admin/start_rgw.sh
-ssh ceph2 bash /usr/local/ceph/admin/start_rgw.sh
-ssh ceph3 bash /usr/local/ceph/admin/start_rgw.sh
-启动完成之后再通过ceph-s查看集群的状态
+### 安装Dashboard管理后台
+仅在主节点执行
+1. 首先确定主节点，找到mgr为active的那个节点，如下：
+``` shell
+# 查看集群状态
+docker exec -it ceph-mon ceph -s
+```
+![文件截图](/img/blogs/2021/10/ceph_mgr_master.png)
+这里的主节点就是obptest2节点
 
+2. 开启dashboard功能
+``` shell
+docker exec ceph-mgr ceph mgr module enable dashboard
+```
 
-安装Dashboard管理后台
-首先确定主节点，通过ceph -s命令查看集群状态，找到mgr为active的那个节点，如下：
+3. 创建证书
+``` shell
+docker exec ceph-mgr ceph dashboard create-self-signed-cert
+```
 
-mgr: ceph1(active), standbys: ceph2, ceph3
-这里的主节点就是ceph1节点。 1. 开启dashboard功能
+4. 创建登陆用户与密码
+``` shell
+# 创建文件并将密码写入
+echo 'test' > dashboard-passwd
 
-docker exec mgr ceph mgr module enable dashboard
-创建登录用户与密码
-docker exec mgr ceph dashboard set-login-credentials admin test
-这里设置用户名为admin,密码为test。 3. 配置外部访问端口个，这里指定端口号是18080，可以自定义修改
+# 将密码文件传入容器内
+docker cp dashboard-passwd ceph-mon:/
 
-docker exec mgr ceph config set mgr mgr/dashboard/server_port 18080
-配置外部访问地址，这里我的主节点IP是192.168.161.137，你需要换成自己的IP地址。
-docker exec mgr ceph config set mgr mgr/dashboard/server_addr 192.168.161.137
-关闭https(如果没有证书或内网访问， 可以关闭)
-docker exec mgr ceph config set mgr mgr/dashboard/ssl false
-重启Mgr DashBoard服务
-docker restart mgr
-查看Mgr DashBoard服务
-docker exec mgr ceph mgr services
-最后通过 http://192.168.161.137:18080/#/dashboard 访问。
+# 创建登陆用户与密码
+docker exec ceph-mgr ceph dashboard set-login-credentials admin -i dashboard-passwd
+```
 
+5. 配置外部访问端口
+``` shell
+docker exec ceph-mgr ceph config set mgr mgr/dashboard/server_port 10084
+```
 
-查看整个集群信息
-至此，整个集群就已经搭建完毕，通过ceph -s命令，可以查看整个集群信息，我们规划的所有节点都已创建成功并加入集群
+6. 配置外部访问IP
+``` shell
+docker exec ceph-mgr ceph config set mgr mgr/dashboard/server_addr 10.169.136.38
+```
 
+7. 关闭https(如果没有证书或内网访问， 可以关闭)
+``` shell
+docker exec ceph-mgr ceph config set mgr mgr/dashboard/ssl false
+```
 
-关于重启mon服务失败问题
+8. 重启Mgr DashBoard服务
+``` shell
+docker restart ceph-mgr
+```
 
-如果修改了配置或者宿主机出现问题， 需要重启mon服务， 会出现不能正常启动的问题，查看容器日志， 最后一行提示：
+9. 查看Mgr DashBoard服务信息
+``` shell
+docker exec ceph-mgr ceph mgr services
+```
+管理控制台界面：
+![文件截图](/img/blogs/2021/10/ceph_dashboard.png)
 
-Existing mon, trying to rejoin cluster abort
+### 创建FS文件系统
+在主节点执行即可
+1. 创建Data Pool
+``` shell
+docker exec ceph-osd ceph osd pool create cephfs_data 128 128
+```
 
-没有具体的原因， 解决的办法是删除/usr/local/ceph/lib/mon目录， 再重新启动， 但这会破坏原有配置与数据， 影响集群的正常运转，这是我们不能接受的， 无耐，只有研究它的启动脚本。（ 这不是Docker容器问题， 是Ceph的镜像脚本编写有点问题。） 将脚本拷贝出来：
+2. 创建Metadata Pool
+``` shell
+docker exec ceph-osd ceph osd pool create cephfs_metadata 64 64
+```
 
-docker cp mon:/opt/ceph-container/bin/start_mon.sh .
+::: warning
+如果受mon_max_pg_per_osd限制， 不能设为128，可以调小点， 改为64
+:::
 
-找到并修改以下内容：
+3. 创建CephFS  
+将上面的数据池与元数据池关联， 创建cephfs的文件系统
+``` shell
+docker exec ceph-osd ceph fs new cephfs cephfs_metadata cephfs_data
+```
 
-# 注释此行，直接将v2v1复制为2，代表是走V2协议， 以指定IP方式加入集群
+4. 查看FS信息
+``` shell
+docker exec ceph-osd ceph fs ls
+```
 
-#v2v1=$(ceph-conf -c /etc/ceph/${CLUSTER}.conf 'mon host' | tr ',' '\n' | grep -c ${MON_IP})
-
-v2v1=2
-
-再将脚本复制至容器内：
-
-docker cp start_mon.sh mon:/opt/ceph-container/bin/start_mon.sh
+### 查看整个集群信息
+至此， 整个集群就已经搭建完毕，可以查看整个集群信息，我们规划的所有节点都已创建成功并加入集群
+``` shell
+docker exec ceph-mon ceph -s
+```
 
 ## 参考
 * <https://blog.csdn.net/hxx688/article/details/103440967?spm=1001.2014.3001.5501>
