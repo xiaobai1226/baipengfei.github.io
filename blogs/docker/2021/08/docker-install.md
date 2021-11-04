@@ -10,7 +10,24 @@ categories:
 本教程安装docker版本为`20.10.8`
 
 ## 在线安装
-。。。待补充 
+### 1. 配置docker镜像源
+``` shell
+wget -O /etc/yum.repos.d/docker-ce.repo https://download.docker.com/linux/centos/docker-ce.repo
+
+yum makecache
+```
+
+### 2. 安装docker依赖包
+``` shell
+yum remove docker docker-common docker-selinux docker-engine
+
+yum install -y yum-utils device-mapper-persistent-data lvm2
+```
+
+### 3. 安装docker-ce
+``` shell
+yum install docker-ce
+```
 
 ## 离线安装
 

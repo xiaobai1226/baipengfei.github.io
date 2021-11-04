@@ -12,7 +12,7 @@ categories:
 
 ## 环境
 1. 系统版本：Redhat7.8
-2. Ceph的docker镜像版本：nautilus
+2. Ceph的docker镜像版本：octopus
 3. Docker版本：20.10.8
 
 ## 介绍
@@ -147,7 +147,7 @@ chown -R 167:167 /app/ceph/
 :::
 
 ``` shell
-docker pull ceph/daemon:master-4d96298-nautilus-centos-7-x86_64
+docker pull ceph/daemon:master-dba849b-octopus-centos-8-x86_64
 ```
 
 ### 启动MON服务
@@ -163,7 +163,7 @@ docker run -d --net=host \
     -v /app/ceph/logs:/var/log/ceph \
     -e MON_IP=10.169.136.38,10.169.136.39,10.169.136.40 \
     -e CEPH_PUBLIC_NETWORK=10.169.136.0/24 \
-    ceph/daemon:master-4d96298-nautilus-centos-7-x86_64 mon
+    ceph/daemon:master-dba849b-octopus-centos-8-x86_64 mon
 ```
 ::: tip
 1. name参数，指定节点名称， 这里设为ceph-mon
@@ -341,7 +341,7 @@ docker run -d \
     -v /app/ceph/lib:/var/lib/ceph \
     -v /app/ceph/logs:/var/log/ceph \
     -v /dev/osd:/var/lib/ceph/osd \
-    ceph/daemon:master-4d96298-nautilus-centos-7-x86_64 osd_directory
+    ceph/daemon:master-dba849b-octopus-centos-8-x86_64 osd_directory
 ```
 ::: tip
 这里我们采用的是osd_directory镜像模式，如果有独立磁盘的话，也可以采用osd_ceph_disk模式，无需格式化，直接指定设备名称即可，如`OSD_DEVICE=/dev/sdb`
@@ -389,7 +389,7 @@ docker run -d --net=host  \
   -v /app/ceph/etc:/etc/ceph \
   -v /app/ceph/lib:/var/lib/ceph \
   -v /app/ceph/logs:/var/log/ceph \
-  ceph/daemon:master-4d96298-nautilus-centos-7-x86_64 mgr
+  ceph/daemon:master-dba849b-octopus-centos-8-x86_64 mgr
 ```
 这个脚本是用于启动mgr组件，它的主要作用是分担和扩展monitor的部分功能，提供图形化的管理界面以便我们更好的管理ceph存储系统。其启动脚本比较简单，在此不再赘述。
 
@@ -417,7 +417,7 @@ docker run -d --net=host  \
   -v /app/ceph/etc:/etc/ceph \
   -v /app/ceph/lib:/var/lib/ceph \
   -v /app/ceph/logs:/var/log/ceph \
-  ceph/daemon:master-4d96298-nautilus-centos-7-x86_64 rgw
+  ceph/daemon:master-dba849b-octopus-centos-8-x86_64 rgw
 ```
 该脚本主要是用于启动rgw组件，rgw（Rados GateWay）作为对象存储网关系统，一方面扮演RADOS集群客户端角色，为对象存储应用提供数据存储，另一方面扮演HTTP服务端角色，接受并解析互联网传送的数据。
 
@@ -459,7 +459,7 @@ docker run -d \
    -e CEPHFS_CREATE=0 \
    -e CEPHFS_METADATA_POOL_PG=512 \
    -e CEPHFS_DATA_POOL_PG=512 \
-   ceph/daemon:master-4d96298-nautilus-centos-7-x86_64 mds
+   ceph/daemon:master-dba849b-octopus-centos-8-x86_64 mds
 ```
 ::: tip 说明
 1. CEPHFS_CREATE：是为METADATA服务生成文件系统，0表示不自动创建文件系统（默认值），1表示自动创建。
@@ -506,7 +506,7 @@ docker exec ceph-mgr ceph dashboard create-self-signed-cert
 echo 'test' > dashboard-passwd
 
 # 将密码文件传入容器内
-docker cp dashboard-passwd ceph-mon:/
+docker cp dashboard-passwd ceph-mgr:/
 
 # 创建登陆用户与密码
 docker exec ceph-mgr ceph dashboard set-login-credentials admin -i dashboard-passwd
@@ -514,7 +514,7 @@ docker exec ceph-mgr ceph dashboard set-login-credentials admin -i dashboard-pas
 
 5. 配置外部访问端口
 ``` shell
-docker exec ceph-mgr ceph config set mgr mgr/dashboard/server_port 10084
+docker exec ceph-mgr ceph config set mgr mgr/dashboard/server_port 10083
 ```
 
 6. 配置外部访问IP
