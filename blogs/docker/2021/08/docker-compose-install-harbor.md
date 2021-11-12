@@ -1,17 +1,23 @@
 ---
-title: Harbor安装
+title: 使用docker-compose安装Harbor
 date: 2021-08-26 10:18:00
 sidebar: 'auto'
 tags:
- - kubernetes
- - k8s
+ - docker-compose
+ - harbor
  - docker
 categories:
- - Kubernetes
  - Docker
 ---
 
+::: tip
+其他方式安装Harbar：
+[使用Helm安装Harbor](../../../kubernetes/2021/11/k8s-helm-install-harbor.md)
+:::
+
 ## Harbor介绍
+&emsp;&emsp;Harbor，是一个英文单词，意思是港湾，港湾是干什么的呢，就是停放货物的，而货物呢，是装在集装箱中的，说到集装箱，就不得不提到Docker容器，因为docker容器的技术正是借鉴了集装箱的原理。所以，Harbor正是一个用于存储Docker镜像的企业级Registry服务。  
+&emsp;&emsp;Docker容器应用的开发和运行离不开可靠的镜像管理，虽然Docker官方也提供了公共的镜像仓库，但是从安全和效率等方面考虑，部署我们私有环境内的Registry也是非常必要的。Harbor是由VMware公司开源的企业级的Docker Registry管理项目，它包括权限管理(RBAC)、LDAP、日志审核、管理界面、自我注册、镜像复制和中文支持等功能。
 
 ## 安装
 ``` shell
@@ -85,6 +91,8 @@ verify_remote_cert = on
 
 修改完配置文件后，分别执行prepare文件与install.sh。
 
+## 修改docker配置
+&emsp;&emsp;由于Docker自从 1.3.x之后，docker registry 交互默认使用的是HTTPS，而我们搭建的 Harbor 使用的是HTTP，所以为了避免 pull/push 镜像时得到错误：`http: server gave HTTP response to HTTPS client`，需要修改 docker 的配置文件 /etc/docker/daemon.json，加入以下配置：
 修改/etc/docker/daemon.json
 ``` shell
 vim /etc/docker/daemon.json

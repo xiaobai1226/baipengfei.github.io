@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "vue-class-component": "^7.2.6",
-    "vuepress-plugin-code-copy": "^1.0.6"
+    "vuepress-plugin-code-copy": "^1.0.6",
+    "vuepress-plugin-flowchart": "^1.4.3"
   },
   "description": "Blog"
 }
