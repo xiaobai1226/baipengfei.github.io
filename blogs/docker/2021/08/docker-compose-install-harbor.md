@@ -11,7 +11,7 @@ categories:
 ---
 
 ::: tip
-其他方式安装Harbar：
+其他方式安装Harbar：  
 [使用Helm安装Harbor](../../../kubernetes/2021/11/k8s-helm-install-harbor.md)
 :::
 

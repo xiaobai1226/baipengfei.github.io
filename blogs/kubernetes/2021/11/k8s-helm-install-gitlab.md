@@ -1,35 +1,36 @@
 ---
-title: 使用Helm安装Harbor
-date: 2021-11-12 16:22:00
+title: 使用Helm安装GitLab
+date: 2021-11-13 16:22:00
 sidebar: 'auto'
 tags:
  - kubernetes
  - k8s
  - helm
- - harbor
+ - gitlab
 categories:
  - Kubernetes
+publish: false
 ---
 
 ::: tip
-其他方式安装Harbar：  
+其他方式安装GitLab：
 [使用docker-compose安装Harbor](../../../docker/2021/08/docker-compose-install-harbor.md)
 :::
 
-## Harbor介绍
-&emsp;&emsp;Harbor，是一个英文单词，意思是港湾，港湾是干什么的呢，就是停放货物的，而货物呢，是装在集装箱中的，说到集装箱，就不得不提到Docker容器，因为docker容器的技术正是借鉴了集装箱的原理。所以，Harbor正是一个用于存储Docker镜像的企业级Registry服务。  
-&emsp;&emsp;Docker容器应用的开发和运行离不开可靠的镜像管理，虽然Docker官方也提供了公共的镜像仓库，但是从安全和效率等方面考虑，部署我们私有环境内的Registry也是非常必要的。Harbor是由VMware公司开源的企业级的Docker Registry管理项目，它包括权限管理(RBAC)、LDAP、日志审核、管理界面、自我注册、镜像复制和中文支持等功能。
+## GitLab介绍
+&emsp;&emsp;Gitlab（gitlab.com）是一个开源的Git代码仓库系统，可以实现自托管的Github项目，即用于构建私有的代码托管平台和项目管理系统。系统基于Ruby on Rails开发，速度快、安全稳定。  
+&emsp;&emsp;它拥有与Github类似的功能，能够浏览源代码，管理缺陷和注释。可以管理团队对仓库的访问，它非常易于浏览提交过的版本并提供一个文件历史库。团队成员可以利用内置的简单聊天程序(Wall)进行交流。它还提供一个代码片段收集功能可以轻松实现代码复用，便于日后有需要的时候进行查找。
 
 ## 前期准备
 1. 安装Helm
 2. 安装k8s
 3. 安装cpeh
 
-## 安装Harbor
-1. 添加 Harbor 仓库：
+## 安装GitLab
+1. 添加 Git 仓库：
 ``` shell
 # 增加Harbor源
-helm repo add harbor https://helm.goharbor.io
+hhelm repo add gitlab https://charts.gitlab.io
 
 # 更新Helm
 helm repo update
@@ -37,20 +38,20 @@ helm repo update
 
 2. 搜索可用的Harbor版本
 ``` shell
-helm search repo harbor/harbor
+helm search repo gitlab
 ```
 可以看到如下结果：  
-![文件截图](/img/blogs/2021/11/helm-search-harbor.png)
+![文件截图](/img/blogs/2021/11/helm-search-gitlab.png)
 
 3. 将Harbor的chart包下载到本地
 ``` shell
-helm fetch harbor/harbor
+helm fetch gitlab/gitlab
 ```
 
 4. 解压文件
 ``` shell
 # 解压文件
-tar xvf harbor-1.8.0.tgz
+tar xvf gitlab-5.4.2.tgz
 
 # 解压完成后进入目录
 cd harbor
@@ -93,18 +94,22 @@ persistence:
       storageClass: "rook-cephfs"
 ```
 
-其中`rook-cephfs`是预先创建好的storageClass
+其中`nis-rook-cephfs`是预先创建好的storageClass
 
 6. 部署Harbor
 ``` shell
-helm install harbor ./ -f my_value.yaml --namespace harbor
+helm install gitlab ./ --namespace gitlab \
+  --set global.edition=ce \
+  --set global.hosts.domain=example.com \
+  --set global.hosts.externalIP=10.169.136.38 \
+  --set certmanager-issuer.email=me@example.com
 ```
 此时就已安装完成了
 
 ## 登录
 默认用户名是admin，密码是Harbor12345。
 ### 页面登录
-根据配置中的地址，`http://10.169.136.38:30002`即可登录web管理页面进行使用。
+根据配置中的地址，`http://10.100.159.128:30002`即可登录web管理页面进行使用。
 
 ### 命令登录
 ``` shell
