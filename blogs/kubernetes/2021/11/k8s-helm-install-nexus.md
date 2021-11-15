@@ -34,8 +34,6 @@ helm repo update
 ``` shell
 helm search repo sonatype/nexus-repository-manager
 ```
-可以看到如下结果：  
-![文件截图](/img/blogs/2021/11/helm-search-harbor.png)
 
 ### 3. 将Nexus的chart包下载到本地
 ``` shell
