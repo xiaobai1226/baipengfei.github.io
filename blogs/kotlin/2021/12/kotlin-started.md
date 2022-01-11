@@ -8,6 +8,10 @@ categories:
  - Kotlin
 ---
 
+::: tip
+本文大量借鉴或搬运了郭霖大神的《第一行代码》第三版中关于kotlin部分的内容。《第一行代码》是非常好的一本Android入门书籍，推荐大家购买学习。
+:::
+
 ## 1. Kotlin介绍
 &emsp;&emsp;Kotlin是一个用于现代多平台应用的静态编程语言，可以编译成Java字节码，也可以编译成JavaScript，方便在没有JVM的设备上运行。其由JetBrains开发并开源，其名称来自于圣彼得堡附近的科特林岛。虽然其与Java语法并不兼容，但在JVM环境中Kotlin被设计成可以和Java代码相互运作，并可以重复使用如Java集合框架等的现有Java引用的函数库。Kotlin v1.0于2016年2月15日发布。这被认为是第一个官方稳定版本，并且JetBrains已准备从该版本开始的长期向后兼容性。  
 &emsp;&emsp;Google在2017年的I/O大会上宣布，Kotlin正式成为Android的一级开发语言，和Java平起平坐，Android Studio也对Kotlin进行了全面的支持。两年之后，Google又在2019年的I/O大会上宣布，Kotlin已经成为Android的第一开发语言，虽然Java仍然可以继续使用，但Google更加推荐开发者使用Kotlin来编写Android应用程序，并且未来提供的官方API也将会优先考虑Kotlin版本。
@@ -209,8 +213,21 @@ fun largerNumber (num1: Int, num2: Int) = if (num1 > num2) num1 else if (num1 < 
 ```
 #### 4.3.2 when语句
 &emsp;&emsp;Kotlin中的when语句有点类似于Java中的switch语句，但它又远比switch语句强大得多。  
-&emsp;&emsp;如果你熟悉Java的话，应该知道Java中的switch语句并不怎么好用。首先，switch只能传入整型或短于整型的变量作为条件，JDK 1.7之后增加了对字符串变量的支持，但如果你的判断逻辑使用的并非是上述几种类型的变量，那么不好意思，switch并不适合你。其次，switch中的每个case条件都要在最后主动加上一个break，否则执行完当前case之后会依次执行下面的case，这一特性曾经导致过无数奇怪的bug，就是因为有人忘记添加break。  
+&emsp;&emsp;如果你熟悉Java的话，应该知道Java中的switch语句并不怎么好用。首先，switch只能传入整型或短于整型的变量作为条件，JDK 1.7之后增加了对字符串变量的支持，但如果你的判断逻辑使用的并非是上述几种类型的变量，那switch并不适合使用。其次，switch中的每个case条件都要在最后主动加上一个break，否则执行完当前case之后会依次执行下面的case，由于忘加break曾经导致过无数奇怪的bug。**（本人亲身踩过坑，坑死我了！！！当然也怪自己不仔细）**  
 &emsp;&emsp;而Kotlin中的when语句不仅解决了上述痛点，还增加了许多更为强大的新特性，有时候它比if语句还要简单好用，下面就来介绍一下。  
+&emsp;&emsp;when语句允许传入一个任意类型的参数，然后可以在when的结构体中定义一系列的条件，格式是：
+``` kotlin
+when(条件) {
+    // 精确匹配
+    匹配值 -> {执行逻辑}
+    // 类型匹配
+    is 类型 -> {执行逻辑}
+    // 未匹配到时执行逻辑
+    else -> {执行逻辑}
+}
+```
+
+下面通过例子来加深理解
 ``` kotlin
 fun getScore(name: String) = if (name == "Tom") {
     86
@@ -219,15 +236,112 @@ fun getScore(name: String) = if (name == "Tom") {
 } else if (name == "Jack") {
     95
 } else if (name == "Lily") {
-    1000
+    100
 } else {
     0
 }
 ```
-&emsp;&emsp;这里定义了一个getScore()函数，这个函数接收一个学生姓名参数，然后通过if判断找到该学生对应的考试分数并返回。可以看到，这里再次使用了单行代码函数的语法糖，正如我所说，它真的很常用。虽然上述代码确实可以实现我们想要的功能，但是写了这么多的if和else，你有没有觉得代码很冗余？没错，当你的判断条件非常多的时候，就是应该考虑使用when语句的时候，现在我们将代码改成如下写法：
-
-&emsp;&emsp;虽然上述代码确实可以实现我们想要的功能，但是写了这么多的if和else，你有没有觉得代码很冗余？没错，当你的判断条件非常多的时候，就是应该考虑使用when语句的时候，现在我们将代码改成如下写法：
+&emsp;&emsp;这里定义了一个getScore()函数，这个函数接收一个学生姓名参数，然后通过if判断找到该学生对应的考试分数并返回。  
+&emsp;&emsp;虽然上述代码确实可以实现我们想要的功能，但是写了这么多的if和else，代码非常冗余。所以当你的判断条件非常多的时候，就可以考虑使用when语句，现在我们将代码改成如下写法：
 ``` kotlin
-
+fun getScore(name: String) = when(name) {
+    "Tom" -> 86
+    "Jim" -> 77
+    "Jack" -> 95
+    "Lily" -> 100
+    else -> 0
+}
 ```
+&emsp;&emsp;可以看到，代码瞬间清爽了很多。另外，when语句和if语句一样，也是可以有返回值的，因此我们仍然可以使用单行代码函数的语法糖。  
+&emsp;&emsp;当你的执行逻辑只有一行代码时，{ }可以省略。这样再来看上述代码就很好理解了吧。除了精确匹配之外，when语句还允许进行类型匹配。什么是类型匹配呢？这里我再举个例子。定义一个checkNumber()函数，如下所示：
+``` kotlin
+fun checkNumber(num: Number) {
+    when(num) {
+        is Int -> println("number is Int")
+        is Double -> println("number is Double")
+        else -> println("number not support")
+    }
+}
+```
+&emsp;&emsp;上述代码中，is关键字就是类型匹配的核心，它相当于Java中的instanceof关键字。由于checkNumber()函数接收一个Number类型的参数，这是Kotlin内置的一个抽象类，像Int、Long、Float、Double等与数字相关的类都是它的子类，所以这里就可以使用类型匹配来判断传入的参数到底属于什么类型，如果是Int型或Double型，就将该类型打印出来，否则就打印不支持该参数的类型。  
+
+&emsp;&emsp;when语句的基本用法就是这些，但其实when语句还有一种不带参数的用法，虽然这种用法可能不太常用，但有的时候却能发挥很强的扩展性。拿刚才的getScore()函数举例，如果我们不在when语句中传入参数的话，还可以这么写：
+``` kotlin
+fun getScore(name: String) = when {
+    name == "Tom" -> 86
+    name == "Jim" -> 77
+    name == "Jack" -> 95
+    name == "Lily" -> 100
+    else -> 0
+}
+```
+&emsp;&emsp;可以看到，这种用法是将判断的表达式完整地写在when的结构体当中。  
+&emsp;&emsp;注意，**Kotlin中判断字符串或对象是否相等可以直接使用==关键字**，而不用像Java那样调用equals()方法。可能你会觉得这种无参数的when语句写起来比较冗余，但有些场景必须使用这种写法才能实现。  
+&emsp;&emsp;举个例子，假设所有名字以Tom开头的人，他的分数都是86分，这种场景如果用带参数的when语句来写就无法实现，而使用不带参数的when语句就可以这样写：
+``` kotlin
+fun getScore(name: String) = when {
+    name.startsWith("Tom") -> 86
+    name == "Jim" -> 77
+    name == "Jack" -> 95
+    name == "Lily" -> 100
+    else -> 0
+}
+```
+&emsp;&emsp;现在不管你传入的名字是Tom还是Tommy，只要是以Tom开头的名字，他的分数就是86分。
+
 ### 4.4 循环语句
+&emsp;&emsp;学习完了条件语句之后，接下来我们开始学习Kotlin中的循环语句。熟悉Java的人应该都知道，Java中主要有两种循环语句：while循环和for循环。而Kotlin也提供了while循环和for循环。
+#### 4.4.1 for循环
+下面我们开始学习Kotlin中的for循环。Kotlin在for循环方面做了很大幅度的修改，Java中最常用的for-i循环在Kotlin中直接被舍弃了，而Java中另一种for-each循环则被Kotlin进行了大幅度的加强，变成了for-in循环，所以我们只需要学习for-in循环的用法就可以了。在开始学习for-in循环之前，还得先向你普及一个区间的概念，因为这也是Java中没有的东西。  
+**1. 闭区间**  
+我们可以使用如下Kotlin代码来表示一个闭区间：
+``` kotlin
+val range = 0..10
+```
+&emsp;&emsp;上述代码表示创建了一个0到10的区间，并且两端都是闭区间，这意味着0到10这两个端点都是包含在区间中的，用数学的方式表达出来就是[0, 10]。其中，..是创建两端闭区间的关键字，在..的两边指定区间的左右端点就可以创建一个区间了。有了区间之后，我们就可以通过for-in循环来遍历这个区间，比如在main()函数中编写如下代码：
+``` kotlin
+fun main() {
+    for(i in 0..10) {
+        println(i)
+    }
+}
+```
+这就是for-in循环最简单的用法了，我们遍历了区间中的每一个元素，并将它打印出来。  
+
+**2. 左闭右开区间**  
+&emsp;&emsp;但是在很多情况下，双端闭区间却不如单端闭区间好用。比如数组的下标都是从0开始的，一个长度为10的数组，它的下标区间范围是0到9，因此左闭右开的区间在程序设计当中更加常用。Kotlin中可以使用until关键字来创建一个左闭右开的区间，如下所示：
+``` kotlin
+val range = 0 until 10
+```
+&emsp;&emsp;上述代码表示创建了一个0到10的左闭右开区间，它的数学表达方式是[0, 10)。修改main()函数中的代码，使用until替代..关键字，你就会发现最后一行10不会再打印出来了。  
+
+**3. step关键字**  
+&emsp;&emsp;默认情况下，for-in循环每次执行循环时会在区间范围内递增1，相当于Java for-i循环中i++的效果，而如果你想跳过其中的一些元素，可以使用step关键字：
+``` kotlin
+fun main() {
+    for(i in 0 until 10 step 2) {
+        println(i)
+    }
+}
+```
+&emsp;&emsp;上述代码表示在遍历[0, 10)这个区间的时候，每次执行循环都会在区间范围内递增2，相当于for-i循环中i = i + 2的效果。  
+&emsp;&emsp;可以看到，现在区间中所有奇数的元素都被跳过了。结合step关键字，我们就能够实现一些更加复杂的循环逻辑。
+
+**4. 降序**  
+&emsp;&emsp;前面我们所学习的..和until关键字都要求区间的左端必须小于等于区间的右端，也就是这两种关键字创建的都是一个升序的区间。如果你想创建一个降序的区间，可以使用`downTo`关键字，用法如下：
+``` kotlin
+fun main() {
+    for(i in 10 downTo 1) {
+        println(i)
+    }
+}
+```
+&emsp;&emsp;这里我们创建了一个[10, 1]的降序区间。降序区间同样可以结合step关键字跳过区间中的一些元素。  
+
+**5. 遍历集合**  
+&emsp;&emsp;for-in循环除了可以对区间进行遍历之外，还可以用于遍历数组和集合。  
+。。。待补充
+
+#### 4.4.2 while循环
+while循环不管是在语法还是使用技巧上都和Java中的while循环没有任何区别。  
+。。。待补充
