@@ -6,6 +6,7 @@ tags:
  - kotlin基础
 categories:
  - Kotlin
+next: ../../2022/01/kotlin-object-programme
 ---
 
 ::: tip

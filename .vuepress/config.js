@@ -3,7 +3,9 @@ module.exports = {
     "title": "小白の生活馆",
     // 博客介绍
     "description": "小白の生活馆",
-    plugins: ['vuepress-plugin-code-copy'],
+     plugins: [
+        'vuepress-plugin-code-copy'
+    ],
     // vuepress 打包后的位置
     "dest": "dist",
     "head": [
@@ -127,7 +129,7 @@ module.exports = {
         "search": true,
         "searchMaxSuggestions": 10,
         // 最后一次更新时间提示文字
-        "lastUpdated": "Last Updated",
+        "lastUpdated": "上次更新",
         // 全局作者名称
         "author": "高压锅里的小白",
         // 图像图片
@@ -137,7 +139,11 @@ module.exports = {
         // 开始年份
         "startYear": "2020"
     },
-    "markdown": {
-        "lineNumbers": true
+    markdown: {
+        "lineNumbers": true,
+        // 使任务列表生效
+        plugins: [
+            'task-lists'
+        ]
     }
 }
