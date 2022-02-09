@@ -272,49 +272,102 @@ interface Study {
 |default|同一包路径下的类可见（默认）|无|
 |internal|无|同一模块中的类可见|
 
-## 6. 数据类
+## 6. 数据类 data关键字
 &emsp;&emsp;在一个规范的系统架构中，数据类通常占据着非常重要的角色，它们用于将服务器端或数据库中的数据映射到内存中，为编程逻辑提供数据模型的支持。或许你听说过MVC、MVP、MVVM之类的架构模式，不管是哪一种架构模式，其中的M指的就是数据类。  
 &emsp;&emsp;数据类通常需要重写equals()、hashCode()、toString()这几个方法。其中，equals()方法用于判断两个数据类是否相等。hashCode()方法作为equals()的配套方法，也需要一起重写，否则会导致HashMap、HashSet等hash相关的系统类无法正常工作。toString()方法用于提供更清晰的输入日志，否则一个数据类默认打印出来的就是一行内存地址。  
-&emsp;&emsp;这里我们新构建一个手机数据类，字段就简单一点，只有品牌和价格这两个字段。如果使用Java来实现这样一个数据类，代码就需要这样写：
-``` kotlin
+&emsp;&emsp;这里我们新建一个手机数据类，字段就简单一点，只有品牌和价格这两个字段。如果使用Java来实现这样一个数据类，代码就需要这样写：
+``` java
+public class Cellphone {
+    String brand;
+    double price;
 
-```
-&emsp;&emsp;看上去挺复杂的吧？关键是这些代码还是一些没有实际逻辑意义的代码，只是为了让它拥有数据类的功能而已。而同样的功能使用Kotlin来实现就会变得极其简单，右击com.example.helloworld包→New→Kotlin File/Class，在弹出的对话框中输入“Cellphone”，创建类型选择“Class”。然后在创建的类中编写如下代码：
-``` kotlin
+    public Cellphone(String brand, double price) {
+        this.brand = brand;
+        this.price = price;
+    }
 
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Cellphone) {
+            Cellphone other = (Cellphone) obj;
+            return other.brand.equals(brand) && other.price == price;
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return brand.hashCode() + (int) price;
+    }
+
+    @Override
+    public String toString() {
+        return "Cellphone(brand=" + brand + ", price=" + price + ")";
+    }
+}
 ```
-&emsp;&emsp;你没看错，只需要一行代码就可以实现了！神奇的地方就在于data这个关键字，当在一个类前面声明了data关键字时，就表明你希望这个类是一个数据类，Kotlin会根据主构造函数中的参数帮你将equals()、hashCode()、toString()等固定且无实际逻辑意义的方法自动生成，从而大大减少了开发的工作量。  
+&emsp;&emsp;看上去挺复杂的吧？关键是这些代码还是一些没有实际逻辑意义的代码，只是为了让它拥有数据类的功能而已。而同样的功能使用Kotlin来实现就会变得极其简单，新建class，在弹出的对话框中输入“Cellphone”，创建类型选择“Data Class”（如果没有，则选择Class，创建成功后自己添加data关键字即可），然后在创建的类中编写如下代码：
+``` kotlin
+data class Cellphone(val brand: String, val price: Double)
+```
+&emsp;&emsp;你没看错，只需要一行代码就可以实现了！神奇的地方就在于`data`这个关键字，当在一个类前面声明了`data`关键字时，就表明你希望这个类是一个数据类，Kotlin会根据主构造函数中的参数帮你将equals()、hashCode()、toString()等固定且无实际逻辑意义的方法自动生成，从而大大减少了开发的工作量。  
 &emsp;&emsp;另外，当一个类中没有任何代码时，还可以将尾部的大括号省略。  
 &emsp;&emsp;下面我们来测试一下这个数据类，在main()函数中编写如下代码：
 ``` kotlin
-
+fun main () { 
+    val cellphone1 = Cellphone("Samsung", 1299.99)
+    val cellphone2 = Cellphone("Samsung", 1299.99)
+    println(cellphone1) 
+    println("cellphone1 equals cellphone2" + (cellphone1 == cellphone2))
+}
 ```
-&emsp;&emsp;这里我们创建了两个Cellphone对象，首先直接将第一个对象打印出来，然后判断这两个对象是否相等。运行一下程序，结果如图2.22所示。  
-&emsp;&emsp;
-很明显，Cellphone数据类已经正常工作了。而如果Cellphone类前面没有data这个关键字，得到的会是截然不同的结果。如果感兴趣的话，你可以自己动手尝试一下。
+&emsp;&emsp;这里我们创建了两个Cellphone对象，首先直接将第一个对象打印出来，然后判断这两个对象是否相等。运行一下程序，结果如图所示  
+![Cellphone运行结果](/img/blogs/2022/01/data_result.png "Cellphone运行结果")    
+&emsp;&emsp;很明显，Cellphone数据类已经正常工作了。而如果Cellphone类前面没有data这个关键字，得到的会是截然不同的结果。如果感兴趣的话，你可以自己动手尝试一下。
 
-## 7. 单例类
+## 7. 单例类 object关键字
 &emsp;&emsp;掌握了数据类的使用技巧之后，接下来我们再来看另外一个Kotlin中特有的功能——单例类。  
-&emsp;&emsp;想必你一定听说过单例模式吧，这是最常用、最基础的设计模式之一，它可以用于避免创建重复的对象。比如我们希望某个类在全局最多只能拥有一个实例，这时就可以使用单例模式。当然单例模式也有很多种写法，这里就演示一种最常见的Java写法吧：
-``` kotlin
+&emsp;&emsp;想必你一定听说过[单例模式](../../../design-patterns/2018/03/singleton.md "单例模式")吧，这是最常用、最基础的设计模式之一，它可以用于避免创建重复的对象。比如我们希望某个类在全局最多只能拥有一个实例，这时就可以使用单例模式。当然单例模式也有很多种写法，这里就演示一种最常见的Java写法吧：
+``` java
+public class Singleton {
+    private static Singleton instance;
 
+    private Singleton() {}
+
+    public synchronized static Singleton getInstance() {
+        if (instance = null) {
+            instance = new Singleton();
+        }
+        return instance; 
+    }
+
+    public void singletonTest() {
+        System.out.println("singletonTest is called.");
+    }
 ```
 &emsp;&emsp;这段代码其实很好理解，首先为了禁止外部创建Singleton的实例，我们需要用private关键字将Singleton的构造函数私有化，然后给外部提供了一个getInstance()静态方法用于获取Singleton的实例。在getInstance()方法中，我们判断如果当前缓存的Singleton实例为null，就创建一个新的实例，否则直接返回缓存的实例即可，这就是单例模式的工作机制。  
 &emsp;&emsp;而如果我们想调用单例类中的方法，也很简单，比如想调用上述的singletonTest()方法，就可以这样写：
-``` kotlin
-
+``` java
+Singleton singleton = Singleton.getInstance();
+singleton.singletonTest();
 ```
 &emsp;&emsp;虽然Java中的单例实现并不复杂，但是Kotlin明显做得更好，它同样是将一些固定的、重复的逻辑实现隐藏了起来，只暴露给我们最简单方便的用法。  
-&emsp;&emsp;在Kotlin中创建一个单例类的方式极其简单，只需要将class关键字改成object关键字即可。现在我们尝试创建一个Kotlin版的Singleton单例类，右击com.example.helloworld包→New→Kotlin File/Class，在弹出的对话框中输入“Singleton”，创建类型选择“Object”，点击“OK”完成创建，初始代码如下所示：
+&emsp;&emsp;在Kotlin中创建一个单例类的方式极其简单，只需要在class关键字前添加`object`关键字即可。现在我们尝试创建一个Kotlin版的Singleton单例类，新建class，在弹出的对话框中输入“Singleton”，创建类型选择“Object”（如果没有，则选择Class，创建成功后自己修改为object关键字即可），点击“OK”完成创建，初始代码如下所示：
 ``` kotlin
-
+object Singleton {
+}
 ```
 &emsp;&emsp;现在Singleton就已经是一个单例类了，我们可以直接在这个类中编写需要的函数，比如加入一个singletonTest()函数：
 ``` kotlin
-
+object Singleton {
+    fun singletonTest() {
+        println("singletonTest is called.")
+    }
+}
 ```
 &emsp;&emsp;可以看到，在Kotlin中我们不需要私有化构造函数，也不需要提供getInstance()这样的静态方法，只需要把class关键字改成object关键字，一个单例类就创建完成了。而调用单例类中的函数也很简单，比较类似于Java中静态方法的调用方式：
 ``` kotlin
-
+Singleton.singletonTest()
 ```
 &emsp;&emsp;这种写法虽然看上去像是静态方法的调用，但其实Kotlin在背后自动帮我们创建了一个Singleton类的实例，并且保证全局只会存在一个Singleton实例。
