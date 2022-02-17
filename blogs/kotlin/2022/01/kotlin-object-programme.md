@@ -7,7 +7,7 @@ tags:
 categories:
  - Kotlin
 prev: ../../2021/12/kotlin-started
-next: 
+next: ../02/kotlin-collection
 ---
 
 ::: tip
