@@ -109,13 +109,13 @@ module.exports = {
             // }
         ],
         // valine评论配置
-        // valineConfig: {
-        //     visitor: true,
-        //     placeholder: '请输入评论...',
-        //     recordIP: true,
-        //     appId: 'yqgiGcAriEWDtWkmELUbIiPB-gzGzoHsz',
-        //     appKey: 'CL0o5NJnuVckUK0sTMmSzmsb',
-        // },
+        valineConfig: {
+            visitor: true,
+            placeholder: '请输入评论...',
+            recordIP: true,
+            appId: 'yqgiGcAriEWDtWkmELUbIiPB-gzGzoHsz',
+            appKey: 'CL0o5NJnuVckUK0sTMmSzmsb',
+        },
         // vssue评论配置
         // vssueConfig: {
         //     platform: 'github',
