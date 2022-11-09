@@ -1,0 +1,19 @@
+version: "3.7"
+services:
+  dev-environment:
+    restart: always
+    image: dev-environment:v0.1
+    tty: true
+    ports:
+      - 8080:8080
+    volumes:
+      - /etc/localtime:/etc/localtime
+      - .:/workspace
+    environment:
+      - TZ=Asia/Shanghai
+    command:
+      - /bin/bash 
+      - -c 
+      - |
+        yarn install
+        yarn run dev
